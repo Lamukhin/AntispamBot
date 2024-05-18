@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: AntispamBot
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/antispambot
+    username: postgres
+    password: SomePassword1997
+    driver-class-name: org.postgresql.Driver
+    initialization-mode: always
