@@ -2,6 +2,7 @@ package com.lamukhin.AntispamBot.service.impl;
 
 import com.lamukhin.AntispamBot.db.repo.MessageCountRepo;
 import com.lamukhin.AntispamBot.service.interfaces.MessageCountService;
+import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
 import com.lamukhin.AntispamBot.service.interfaces.UpdateProcessingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
     private final Logger log = LoggerFactory.getLogger(UpdateProcessingServiceDefault.class);
     private final MessageCountRepo messageCountRepo;
     private final MessageCountService messageCountService;
+    private final SpamCheckingService spamCheckingService;
 
 
     @Override
@@ -29,16 +31,17 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
             return;
         } else if (amount == null){
             messageCountService.saveNewMember(userTelegramId);
-            spamCheck(update);
+            spamCheckingService.checkUpdate(update);
         } else {
-            spamCheck(update);
+            spamCheckingService.checkUpdate(update);
         }
 
     }
 
     public UpdateProcessingServiceDefault(MessageCountRepo messageCountRepo,
-                                          MessageCountService messageCountService) {
+                                          MessageCountService messageCountService, SpamCheckingService spamCheckingService) {
         this.messageCountRepo = messageCountRepo;
         this.messageCountService = messageCountService;
+        this.spamCheckingService = spamCheckingService;
     }
 }
