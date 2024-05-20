@@ -15,6 +15,11 @@ public class MessageCountEntity {
     private long idChatTelegram;
     private long counter;
 
+    public MessageCountEntity(long idChatTelegram, long counter) {
+        this.idChatTelegram = idChatTelegram;
+        this.counter = counter;
+    }
+
     public int getId() {
         return id;
     }
