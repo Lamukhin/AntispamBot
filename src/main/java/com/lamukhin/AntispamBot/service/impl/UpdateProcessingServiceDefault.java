@@ -15,7 +15,6 @@ import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 public class UpdateProcessingServiceDefault implements UpdateProcessingService {
 
     private final Logger log = LoggerFactory.getLogger(UpdateProcessingServiceDefault.class);
-    private final MessageCountRepo messageCountRepo;
     private final MessageCountService messageCountService;
     private final SpamCheckingService spamCheckingService;
 
@@ -31,16 +30,16 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
             return;
         } else if (amount == null){
             messageCountService.saveNewMember(userTelegramId);
-            spamCheckingService.checkUpdate(update);
+            spamCheckingService.checkUpdate(update, engine);
         } else {
-            spamCheckingService.checkUpdate(update);
+            spamCheckingService.checkUpdate(update,engine);
+            messageCountService.updateAmount(userTelegramId);
         }
 
     }
 
-    public UpdateProcessingServiceDefault(MessageCountRepo messageCountRepo,
-                                          MessageCountService messageCountService, SpamCheckingService spamCheckingService) {
-        this.messageCountRepo = messageCountRepo;
+    public UpdateProcessingServiceDefault(MessageCountService messageCountService,
+                                          SpamCheckingService spamCheckingService) {
         this.messageCountService = messageCountService;
         this.spamCheckingService = spamCheckingService;
     }

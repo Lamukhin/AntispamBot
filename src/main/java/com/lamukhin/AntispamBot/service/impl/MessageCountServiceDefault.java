@@ -33,7 +33,7 @@ public class MessageCountServiceDefault implements MessageCountService {
                             (int) element.getCounter()
                     )
             );
-            log.warn("Data has successfully fetched from the Database, {} records found.", result.size());
+            log.warn("Data has successfully fetched from the Database, {} records found.", cachedUsers.size());
         }
     }
 
@@ -44,11 +44,17 @@ public class MessageCountServiceDefault implements MessageCountService {
 
     @Override
     public void saveNewMember(long idChatTelegram) {
-        cachedUsers.put(String.valueOf(idChatTelegram), 0);
+        cachedUsers.put(String.valueOf(idChatTelegram), 1);
+    }
+
+    @Override
+    public void updateAmount(long userTelegramId) {
+        int increasedAmount = cachedUsers.get(String.valueOf(userTelegramId)) + 1;
+        cachedUsers.put(String.valueOf(userTelegramId), increasedAmount);
     }
 
     @Async
-    @Scheduled(fixedRate = 60 * 60 * 1000) //every hour
+    @Scheduled(fixedDelay = 60 * 60 * 1000) //every hour
     protected void saveCacheToDatabase() {
         cachedUsers.forEach((key, value) ->
                 messageCountRepo.save(
