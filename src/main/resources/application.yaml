@@ -1,13 +1,17 @@
 spring:
   application:
-    name: AntispamBot
+    name: antispam-bot
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/antispambot
+    url: jdbc:postgresql://postgres:5433/antispambot
     username: postgres
     password: SomePassword1997
     driver-class-name: org.postgresql.Driver
     initialization-mode: always
+
+  jpa:
+    hibernate:
+      ddl-auto: create
 
   jooq:
     sql-dialect: Postgres

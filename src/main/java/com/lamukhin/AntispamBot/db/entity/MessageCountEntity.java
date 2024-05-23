@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class MessageCountEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     @Column(name="id_chat_telegram")
     private long idChatTelegram;
