@@ -34,3 +34,7 @@ program-agent:
     time-delay-send: 15000
     host: "https://wds-program-agent.ru/api/"
     myHost: "http://10.9.0.5:1016/api/"
+
+coefficients:
+  one_word: 0.65d
+  whole_message: 0.7d

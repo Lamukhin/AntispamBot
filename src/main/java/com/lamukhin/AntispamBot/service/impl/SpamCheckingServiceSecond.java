@@ -3,62 +3,78 @@ package com.lamukhin.AntispamBot.service.impl;
 import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class SpamCheckingServiceSecond implements SpamCheckingService {
 
     private final Logger log = LoggerFactory.getLogger(SpamCheckingServiceDefault.class);
-    private Set<String> dictionary = new HashSet<>();
+    private Map<String, Integer> dictionary = new HashMap<>();
+
+    @Value("${coefficients.one_word}")
+    private double oneWord;
+
+    @Value("${coefficients.whole_message}")
+    private double wholeMessage;
 
     @Override
     public void checkUpdate(Update update, TelegramLongPollingEngine engine) {
-        dictionary.add("sex");
+        dictionary.put("sex", 4);
         if ((update.hasMessage()) && (update.getMessage().hasText())) {
             String incomeMessage = update.getMessage().getText();
-            incomeMessage = incomeMessage.replaceAll("[^a-zA-Zа-яА-Я0-9\s]", "").trim();
+            incomeMessage = incomeMessage
+                    .toLowerCase()
+                    .replaceAll("[^a-zA-Zа-яА-Я0-9\s]", "")
+                    .replaceAll("не", "")
+                    .trim();
             String[] wordsOfMessage = incomeMessage.split(" ");
-            List<String> pairsOfWords = new ArrayList<>();
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < wordsOfMessage.length; i++) {
-                stringBuilder
-                        .append(wordsOfMessage[i])
-                        .append(" ")
-                        .append(wordsOfMessage[i + 1]);
-                pairsOfWords.add(stringBuilder.toString());
-                stringBuilder = new StringBuilder();
-            }
-            double coef = 0.0;
-            int counter = 0;
+            //Вариант с парными словами пока отложим
+//            List<String> pairsOfWords = new ArrayList<>();
+//            StringBuilder stringBuilder = new StringBuilder();
+//            for (int i = 0; i < wordsOfMessage.length; i++) {
+//                stringBuilder
+//                        .append(wordsOfMessage[i])
+//                        .append(" ")
+//                        .append(wordsOfMessage[i + 1]);
+//                pairsOfWords.add(stringBuilder.toString());
+//                stringBuilder = new StringBuilder();
+//            }
+            //double coef = 0.0;
+            int totalMessageScore = 0;
             List<Character> crosses = new ArrayList<>();
-            for (String pair : pairsOfWords) {
-                for (String wordInDictionary : dictionary) {
+            for (String word : wordsOfMessage) {
+                if(word.length() < 3){ //словом считается строка от 3 символов, нам не нужны предлоги
+                    break;
+                }
+                for (String wordInDictionary : dictionary.keySet()) {
+                    if (Math.abs(word.length() - wordInDictionary.length()) > 3) {
+                        break; // если дельта длины слов больше 3, то слишком сложно сравнить достоверно
+                    }
                     int inWordCrossesCounter = 0;
-                    for (char currentCharInPair : pair.toCharArray()) {
-                        if (!crosses.contains(currentCharInPair)) {
-                            int amountAtPair = countItem(pair.toCharArray(), currentCharInPair);
-                            int amountAtDictionary = countItem(wordInDictionary.toCharArray(), currentCharInPair);
-                            int minCount = Math.min(amountAtPair, amountAtDictionary);
+                    for (char currentCharInWord : word.toCharArray()) {
+                        if (!crosses.contains(currentCharInWord)) {
+                            int amountAtWord = countItem(word.toCharArray(), currentCharInWord);
+                            int amountAtDictionary = countItem(wordInDictionary.toCharArray(), currentCharInWord);
+                            int minCount = Math.min(amountAtWord, amountAtDictionary);
                             for (int i = 0; i < minCount; i++) {
-                                crosses.add(currentCharInPair);
+                                crosses.add(currentCharInWord);
                                 inWordCrossesCounter++;
                             }
                         }
                     }
-                    coef = (double) inWordCrossesCounter / ());
-                    /*вот тут возникает проблема, как выводить кэф?
-                    наверное лучше не парами тогда а по слову и фильтровать по длине
-                            например если это предлагаю то однокоренные будут рядом и сравнятся с
-                            высоким кэфом*/
-                    if (coef > 0.7)
+                    double coefOfCurrentWord = (double)
+                            ((inWordCrossesCounter/word.length())+(inWordCrossesCounter/wordInDictionary.length()))
+                            / 2;
+                    if (coefOfCurrentWord > oneWord) {
+                        totalMessageScore += dictionary.get(wordInDictionary);
+                    }
                 }
+                if(totalMessageScore >
             }
 
         }
