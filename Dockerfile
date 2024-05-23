@@ -1,4 +1,5 @@
-FROM eclipse-temurin:17-jdk-alpine as build
+FROM gradle:jdk21 as build
+USER root
 WORKDIR /workspace/app
 
 COPY gradlew .
@@ -6,7 +7,8 @@ COPY .gradle .gradle
 COPY build.gradle .
 COPY src src
 
-RUN ./gradlew build -x test
+#RUN chmod a+x gradlew && gradle wrapper && ./gradlew build -x test
+RUN gradle build -x test
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 FROM eclipse-temurin:17-jdk-alpine
