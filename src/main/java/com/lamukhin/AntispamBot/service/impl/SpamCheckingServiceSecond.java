@@ -17,11 +17,15 @@ public class SpamCheckingServiceSecond implements SpamCheckingService {
     private final Logger log = LoggerFactory.getLogger(SpamCheckingServiceDefault.class);
     private Map<String, Integer> dictionary = new HashMap<>();
 
-    @Value("${coefficients.one_word}")
-    private double oneWord;
+    @Value("${coefficients.of_current_word}")
+    private double ofCurrentWord;
 
-    @Value("${coefficients.whole_message}")
-    private double wholeMessage;
+    @Value("${coefficients.for_4_to_6_length}")
+    private double for4To6Length;
+    @Value("${coefficients.for_7_to_20_length}")
+    private double for7To20Length;
+    @Value("${coefficients.for_more_21_length}")
+    private double forMoreThan21Length;
 
     @Override
     public void checkUpdate(Update update, TelegramLongPollingEngine engine) {
@@ -71,7 +75,7 @@ public class SpamCheckingServiceSecond implements SpamCheckingService {
                     double coefOfCurrentWord = (double)
                             ((inWordCrossesCounter/word.length())+(inWordCrossesCounter/wordInDictionary.length()))
                             / 2;
-                    if (coefOfCurrentWord > oneWord) {
+                    if (coefOfCurrentWord > ofCurrentWord) {
                         totalMessageScore += dictionary.get(wordInDictionary);
                     }
                 }
@@ -90,13 +94,13 @@ public class SpamCheckingServiceSecond implements SpamCheckingService {
 
     private boolean isSpam(double coefOfAllMessage, int amountOfWords) {
         if ((amountOfWords >= 4)&&(amountOfWords <= 6)){
-            return coefOfAllMessage >= 0.9;
+            return coefOfAllMessage >= for4To6Length;
         }
         if ((amountOfWords >= 7)&&(amountOfWords <= 20)){
-            return coefOfAllMessage >= 0.7;
+            return coefOfAllMessage >= for7To20Length;
         }
         if (amountOfWords >= 21){
-            return coefOfAllMessage >= 0.6;
+            return coefOfAllMessage >= forMoreThan21Length;
         }
         return false;
     }

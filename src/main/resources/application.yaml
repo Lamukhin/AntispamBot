@@ -36,5 +36,7 @@ program-agent:
     myHost: "http://10.9.0.5:1016/api/"
 
 coefficients:
-  one_word: 0.65d
-  whole_message: 0.7d
+  of_current_word: 0.65d
+  for_4_to_6_length: 0.9d
+  for_7_to_20_length: 0.7d
+  for_more_21_length: 0.6d
