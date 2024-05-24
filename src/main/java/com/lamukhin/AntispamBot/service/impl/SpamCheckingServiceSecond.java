@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 
@@ -74,10 +75,30 @@ public class SpamCheckingServiceSecond implements SpamCheckingService {
                         totalMessageScore += dictionary.get(wordInDictionary);
                     }
                 }
-                if(totalMessageScore >
+                double coefOfAllMessage = (double) totalMessageScore / wordsOfMessage.length;
+                if (isSpam(coefOfAllMessage, wordsOfMessage.length)){
+                    var send = DeleteMessage.builder()
+                            .chatId(update.getMessage().getChatId())
+                            .messageId(update.getMessage().getMessageId())
+                            .build();
+                    engine.executeNotException(send);
+                }
             }
 
         }
+    }
+
+    private boolean isSpam(double coefOfAllMessage, int amountOfWords) {
+        if ((amountOfWords >= 4)&&(amountOfWords <= 6)){
+            return coefOfAllMessage >= 0.9;
+        }
+        if ((amountOfWords >= 7)&&(amountOfWords <= 20)){
+            return coefOfAllMessage >= 0.7;
+        }
+        if (amountOfWords >= 21){
+            return coefOfAllMessage >= 0.6;
+        }
+        return false;
     }
 
     private int countItem(char[] list, char item) {
