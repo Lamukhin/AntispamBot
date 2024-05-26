@@ -1,6 +1,5 @@
 package com.lamukhin.AntispamBot.service.impl;
 
-import com.lamukhin.AntispamBot.db.repo.MessageCountRepo;
 import com.lamukhin.AntispamBot.service.interfaces.MessageCountService;
 import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
 import com.lamukhin.AntispamBot.service.interfaces.UpdateProcessingService;
@@ -9,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
-
 
 @Service
 public class UpdateProcessingServiceDefault implements UpdateProcessingService {
@@ -21,7 +19,6 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
 
     @Override
     public void processUpdate(TelegramLongPollingEngine engine, Update update) {
-        //log.warn("Some sex with {}", update.getMessage().getFrom().getId());
         //TODO: внедрить jooq. пока не вышло, так как проблема с плагином. использую jpa
         long userTelegramId = update.getMessage().getFrom().getId();
         Integer amount = messageCountService.amountOfMessages(userTelegramId);
@@ -32,8 +29,8 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
             messageCountService.saveNewMember(userTelegramId);
             spamCheckingService.checkUpdate(update, engine);
         } else {
-            spamCheckingService.checkUpdate(update,engine);
             messageCountService.updateAmount(userTelegramId);
+            spamCheckingService.checkUpdate(update,engine);
         }
 
     }

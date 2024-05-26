@@ -8,12 +8,15 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.interfaces.HandlerBotUpdate;
 
+/*
+    This is a root component for all application.
+    Every message processing starts here.
+ */
 
 @Component
 public class UpdateListener implements HandlerBotUpdate {
 
     private final Logger log = LoggerFactory.getLogger(UpdateListener.class);
-
     private final UpdateProcessingService updateProcessingService;
 
     @Override

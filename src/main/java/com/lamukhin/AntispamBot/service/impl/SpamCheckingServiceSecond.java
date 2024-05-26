@@ -18,7 +18,7 @@ public class SpamCheckingServiceSecond implements SpamCheckingService {
     private Map<String, Integer> dictionary = new HashMap<>();
 
     @Value("${coefficients.of_current_word}")
-    private double ofCurrentWord;
+    private double forCurrentWord;
 
     @Value("${coefficients.for_4_to_6_length}")
     private double for4To6Length;
@@ -29,15 +29,20 @@ public class SpamCheckingServiceSecond implements SpamCheckingService {
 
     @Override
     public void checkUpdate(Update update, TelegramLongPollingEngine engine) {
-        dictionary.put("sex", 4);
+        dictionary.put("sex", 1);
+        Set<Character> banSymbols = new HashSet<>();
+        banSymbols.add('@');
+        banSymbols.add('+');
+        banSymbols.add('$');
         if ((update.hasMessage()) && (update.getMessage().hasText())) {
             String incomeMessage = update.getMessage().getText();
             incomeMessage = incomeMessage
                     .toLowerCase()
-                    .replaceAll("[^a-zA-Zа-яА-Я0-9\s]", "")
-                    .replaceAll("не", "")
+                    .replaceAll("[^a-zA-Zа-яА-Я0-9\s]", " ")
+                    //.replaceAll("не", "")
                     .trim();
             String[] wordsOfMessage = incomeMessage.split(" ");
+            Arrays.stream(wordsOfMessage).forEach(e -> System.out.print(e + " "));
             //Вариант с парными словами пока отложим
 //            List<String> pairsOfWords = new ArrayList<>();
 //            StringBuilder stringBuilder = new StringBuilder();
@@ -51,15 +56,21 @@ public class SpamCheckingServiceSecond implements SpamCheckingService {
 //            }
             //double coef = 0.0;
             int totalMessageScore = 0;
-            List<Character> crosses = new ArrayList<>();
+
             for (String word : wordsOfMessage) {
-                if(word.length() < 3){ //словом считается строка от 3 символов, нам не нужны предлоги
+                if (word.length() < 3){ //словом считается строка от 3 символов, нам не нужны предлоги
+                    if ((banSymbols.contains(word.charAt(0)))||(banSymbols.contains(word.charAt(1)))){
+                        //некоторые символы просто нельзя игнорировать. например, $ или +
+                        totalMessageScore++;
+                    }
                     break;
                 }
                 for (String wordInDictionary : dictionary.keySet()) {
                     if (Math.abs(word.length() - wordInDictionary.length()) > 3) {
+                        System.out.println("дельта ту биг");
                         break; // если дельта длины слов больше 3, то слишком сложно сравнить достоверно
                     }
+                    List<Character> crosses = new ArrayList<>();
                     int inWordCrossesCounter = 0;
                     for (char currentCharInWord : word.toCharArray()) {
                         if (!crosses.contains(currentCharInWord)) {
@@ -67,6 +78,7 @@ public class SpamCheckingServiceSecond implements SpamCheckingService {
                             int amountAtDictionary = countItem(wordInDictionary.toCharArray(), currentCharInWord);
                             int minCount = Math.min(amountAtWord, amountAtDictionary);
                             for (int i = 0; i < minCount; i++) {
+                                log.warn("найдено совпадение символа {} в слове {}", currentCharInWord, word);
                                 crosses.add(currentCharInWord);
                                 inWordCrossesCounter++;
                             }
@@ -75,23 +87,28 @@ public class SpamCheckingServiceSecond implements SpamCheckingService {
                     double coefOfCurrentWord = (double)
                             ((inWordCrossesCounter/word.length())+(inWordCrossesCounter/wordInDictionary.length()))
                             / 2;
-                    if (coefOfCurrentWord > ofCurrentWord) {
+                    log.warn("кэф найденного слова {}", coefOfCurrentWord);
+                    if (coefOfCurrentWord > forCurrentWord) {
                         totalMessageScore += dictionary.get(wordInDictionary);
                     }
                 }
-                double coefOfAllMessage = (double) totalMessageScore / wordsOfMessage.length;
-                if (isSpam(coefOfAllMessage, wordsOfMessage.length)){
-                    var send = DeleteMessage.builder()
-                            .chatId(update.getMessage().getChatId())
-                            .messageId(update.getMessage().getMessageId())
-                            .build();
-                    engine.executeNotException(send);
-                }
+
             }
+            double coefOfAllMessage = (double) totalMessageScore / wordsOfMessage.length;
+            if (isSpam(coefOfAllMessage, wordsOfMessage.length)){
+                System.out.println("IT IS SPAM");
+                var send = DeleteMessage.builder()
+                        .chatId(update.getMessage().getChatId())
+                        .messageId(update.getMessage().getMessageId())
+                        .build();
+                engine.executeNotException(send);
+            }
+            System.out.println("IT IS NOT SPAM");
 
         }
     }
 
+    // yes, im bad at math
     private boolean isSpam(double coefOfAllMessage, int amountOfWords) {
         if ((amountOfWords >= 4)&&(amountOfWords <= 6)){
             return coefOfAllMessage >= for4To6Length;

@@ -34,10 +34,8 @@ dependencies {
 	implementation group: 'com.vladmihalcea', name: 'hibernate-types-55', version: '2.20.0'
 	implementation group: 'com.squareup.retrofit2', name: 'converter-gson', version: '2.9.0'
 	implementation 'org.flywaydb:flyway-core'
-	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
 
 	runtimeOnly 'org.postgresql:postgresql'
-	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.16.0'
