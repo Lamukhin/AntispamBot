@@ -3,7 +3,6 @@ package com.lamukhin.AntispamBot.service.impl;
 import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
@@ -13,10 +12,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 //@Service
@@ -42,10 +38,17 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             incomeMessage = incomeMessage.replaceAll("[^a-zA-Zа-яА-Я0-9\s]", "");
             String[] wordsOfMessage = incomeMessage.split(" ");
             List<Search> tasks = new ArrayList<>();
-            for (int i = 0; i < wordsOfMessage.length; i++){
-                Search search = new Search(wordsOfMessage[i]);
+            for (String s : wordsOfMessage) {
+                Search search = new Search(s);
                 tasks.add(search);
             }
+
+            CompletableFuture<Void> future = CompletableFuture.runAsync(
+                    tasks.get(0),
+                    executorService
+            );
+
+
 
             try {
                 Boolean hasFound = executorService.invokeAny(tasks);
@@ -67,25 +70,25 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
         }
     }
 
-    private class Search implements Callable<Boolean> {
+    private class Search implements Runnable{
         private final String word;
+        CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
         private Search(String word){
             this.word = word;
         }
         @Override
-        public Boolean call() {
+        public void run() {
             try {
                 if (dictionary.contains(word)){
                     log.warn("IT IS SPAM! Word \"{}\" is banned", word);
-                    return true;
                 }
             } catch (Exception ex){
                 log.error("Exception during executing the search callable method: {}", ex.getMessage());
             }
-            return false;
         }
     }
 
+    //me smart, me dymatb
     @PreDestroy
     private void destroyExecutorService(){
         executorService.shutdown();
