@@ -1,25 +1,34 @@
 package com.lamukhin.AntispamBot.service.impl;
 
 import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
+import okhttp3.Call;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 
 import javax.annotation.PreDestroy;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import com.lamukhin.AntispamBot.verification.Search;
 
-//@Service
+@Service
 public class SpamCheckingServiceDefault implements SpamCheckingService {
 
     private final Logger log = LoggerFactory.getLogger(SpamCheckingServiceDefault.class);
+    private final Map<Character, Integer> symbolsDictionary = new HashMap<>();
+    private final Map<String, Integer> wordDictionary = new HashMap<>();
 
+    @Value("${coefficients.for_4_to_6_length}")
+    private double for4To6Length;
+    @Value("${coefficients.for_7_to_20_length}")
+    private double for7To20Length;
+    @Value("${coefficients.for_more_21_length}")
+    private double forMoreThan21Length;
     private final ExecutorService executorService =
             Executors.newFixedThreadPool(10, r -> {
                 Thread thread = new Thread(r);
@@ -27,70 +36,72 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                 return thread;
             });
 
-    private Set<String> dictionary = new HashSet<>();
 
     @Override
     public void checkUpdate(Update update, TelegramLongPollingEngine engine) {
         AtomicInteger atomicCounter = new AtomicInteger();
-        dictionary.add("sex");
-        if ((update.hasMessage())&&(update.getMessage().hasText())) {
-            String incomeMessage = update.getMessage().getText();
-            incomeMessage = incomeMessage.replaceAll("[^a-zA-Zа-яА-Я0-9\s]", "");
-            String[] wordsOfMessage = incomeMessage.split(" ");
-            List<Search> tasks = new ArrayList<>();
-            for (String s : wordsOfMessage) {
-                Search search = new Search(s);
+        wordDictionary.put("sex", 1);
+        symbolsDictionary.put('@', 1);
+        symbolsDictionary.put('+', 1);
+        symbolsDictionary.put('$', 1);
+        if ((update.hasMessage()) && (update.getMessage().hasText())) {
+            int totalMessageScore = 0;
+            String[] wordsOfMessage = invokeWordsFromRawMessage(update.getMessage().getText());
+
+            List<Callable<Integer>> tasks = new ArrayList<>();
+            for (String word : wordsOfMessage) {
+                Search search = new Search(word, wordDictionary, symbolsDictionary);
                 tasks.add(search);
             }
 
-            CompletableFuture<Void> future = CompletableFuture.runAsync(
-                    tasks.get(0),
-                    executorService
-            );
-
-
-
             try {
-                Boolean hasFound = executorService.invokeAny(tasks);
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
+                List<Future<Integer>> futures = executorService.invokeAll(tasks);
+                for (Future<Integer> currentFuture : futures){
+                    totalMessageScore += currentFuture.get();
+                }
+            } catch (InterruptedException | RuntimeException | ExecutionException ex) {
+                log.error("The message checking has failed: {}", ex.getMessage());
             }
 
-            log.warn("atomicCounter {}", atomicCounter.get());
-            if (atomicCounter.get() >= 3){
-                //условно бан
+            double coefOfAllMessage = (double) totalMessageScore / wordsOfMessage.length;
+            if (isSpam(coefOfAllMessage, wordsOfMessage.length)){
+                System.out.println("IT IS SPAM");
                 var send = DeleteMessage.builder()
                         .chatId(update.getMessage().getChatId())
                         .messageId(update.getMessage().getMessageId())
                         .build();
                 engine.executeNotException(send);
-
             }
+            System.out.println("IT IS NOT SPAM");
 
         }
     }
 
-    private class Search implements Runnable{
-        private final String word;
-        CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
-        private Search(String word){
-            this.word = word;
-        }
-        @Override
-        public void run() {
-            try {
-                if (dictionary.contains(word)){
-                    log.warn("IT IS SPAM! Word \"{}\" is banned", word);
-                }
-            } catch (Exception ex){
-                log.error("Exception during executing the search callable method: {}", ex.getMessage());
-            }
-        }
+    private String[] invokeWordsFromRawMessage(String incomeMessage) {
+        incomeMessage = incomeMessage
+                .toLowerCase()
+                .replaceAll("[^a-zA-Zа-яА-Я0-9\s]", " ")
+                .trim();
+        return incomeMessage.split(" ");
     }
 
-    //me smart, me dymatb
+    // yes, im bad at math
+    private boolean isSpam(double coefOfAllMessage, int amountOfWords) {
+        if ((amountOfWords >= 4)&&(amountOfWords <= 6)){
+            return coefOfAllMessage >= for4To6Length;
+        }
+        if ((amountOfWords >= 7)&&(amountOfWords <= 20)){
+            return coefOfAllMessage >= for7To20Length;
+        }
+        if (amountOfWords >= 21){
+            return coefOfAllMessage >= forMoreThan21Length;
+        }
+        return false;
+    }
+
+
     @PreDestroy
-    private void destroyExecutorService(){
+    private void destroyExecutorService() {
         executorService.shutdown();
     }
 }

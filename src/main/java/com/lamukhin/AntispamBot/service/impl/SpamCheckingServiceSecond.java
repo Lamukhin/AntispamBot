@@ -11,7 +11,7 @@ import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 
 import java.util.*;
 
-@Service
+//@Service
 public class SpamCheckingServiceSecond implements SpamCheckingService {
 
     private final Logger log = LoggerFactory.getLogger(SpamCheckingServiceDefault.class);
@@ -19,7 +19,6 @@ public class SpamCheckingServiceSecond implements SpamCheckingService {
 
     @Value("${coefficients.of_current_word}")
     private double forCurrentWord;
-
     @Value("${coefficients.for_4_to_6_length}")
     private double for4To6Length;
     @Value("${coefficients.for_7_to_20_length}")
@@ -131,4 +130,5 @@ public class SpamCheckingServiceSecond implements SpamCheckingService {
         }
         return count;
     }
+
 }

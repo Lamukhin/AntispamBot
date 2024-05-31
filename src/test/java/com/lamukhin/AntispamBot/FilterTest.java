@@ -14,7 +14,7 @@ public class FilterTest {
     SpamCheckingServiceSecond spamCheckingServiceSecond;
 
     @Test
-    void checkUpdateTest() {
+    void messageFilterTest() {
 
         String incomeMessage = "\u2060\u2060\u2060\u2060\u2060\u2060\u2060\u2060\u2060\u2060❗\uFE0FOcтopoжнo❗\uFE0F Нужeн человek  удaлеnnого сотpyдничества \n" +
                 "\n" +
