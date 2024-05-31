@@ -23,47 +23,29 @@ public class StartCommand {
     @CommandFirst
     public void greeting(TelegramLongPollingEngine engine,
                          @ParamName("chatId") Long chatId) {
-        if (System.currentTimeMillis() - helloTime >= 1800000) {
-            floodCatched = true;
-        }
-
-        if (justStarted) {
+        if (System.currentTimeMillis() - helloTime < 1800000) {
+            if (justStarted) {
+                MessageOperations.sendNewMessage(
+                        chatId,
+                        HELLO,
+                        engine);
+                helloTime = System.currentTimeMillis();
+                justStarted = false;
+            } else if (!floodCatched) {
+                MessageOperations.sendNewMessage(
+                        chatId,
+                        DONT_FLOOD,
+                        engine);
+                floodCatched = true;
+            }
+        } else {
             MessageOperations.sendNewMessage(
                     chatId,
                     HELLO,
                     engine);
             helloTime = System.currentTimeMillis();
-            justStarted = false;
-        } else if (!floodCatched) {
-            MessageOperations.sendNewMessage(
-                    chatId,
-                    DONT_FLOOD,
-                    engine);
             floodCatched = true;
         }
-//        if (System.currentTimeMillis() - helloTime < 1800000) {
-//            if (justStarted) {
-//                MessageOperations.sendNewMessage(
-//                        chatId,
-//                        HELLO,
-//                        engine);
-//                helloTime = System.currentTimeMillis();
-//                justStarted = false;
-//            } else if (!floodCatched) {
-//                MessageOperations.sendNewMessage(
-//                        chatId,
-//                        DONT_FLOOD,
-//                        engine);
-//                floodCatched = true;
-//            }
-//        } else {
-//            MessageOperations.sendNewMessage(
-//                    chatId,
-//                    HELLO,
-//                    engine);
-//            helloTime = System.currentTimeMillis();
-//            floodCatched = true;
-//        }
 
     }
 
