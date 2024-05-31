@@ -1,5 +1,6 @@
 package com.lamukhin.AntispamBot.command;
 
+import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -25,76 +26,35 @@ public class StartCommand {
     private final Logger log = LoggerFactory.getLogger(StartCommand.class);
     private long helloTime = System.currentTimeMillis();
     private boolean justStarted = true;
+    private boolean floodCatched = false;
 
     @CommandFirst
     public void greeting(TelegramLongPollingEngine engine,
-                         UserBotSession userBotSession,
                          @ParamName("chatId") Long chatId) {
         if (System.currentTimeMillis() - helloTime < 1800000) {
             if (justStarted) {
-                var send = new SendMessage();
-                send.setChatId(chatId);
-                send.setText("ПРИВЕТ");
-                //TODO: внедрить утилитный класс для отправки сообщений
-                try {
-                    engine.execute(send);
-                    helloTime = System.currentTimeMillis();
-                    justStarted = false;
-                } catch (TelegramApiException e) {
-                    log.error(e.getMessage());
-                }
-            } else {
-                var send = new SendMessage();
-                send.setChatId(chatId);
-                send.setText("РАНО");
-                //TODO: внедрить утилитный класс для отправки сообщений
-                try {
-                    engine.execute(send);
-                    helloTime = System.currentTimeMillis();
-                } catch (TelegramApiException e) {
-                    log.error(e.getMessage());
-                }
-            }
-        } else {
-            var send = new SendMessage();
-            send.setChatId(chatId);
-            send.setText(HELLO);
-            //TODO: внедрить утилитный класс для отправки сообщений
-            try {
-                engine.execute(send);
+                MessageOperations.sendNewMessage(
+                        chatId,
+                        HELLO,
+                        engine);
                 helloTime = System.currentTimeMillis();
-            } catch (TelegramApiException e) {
-                log.error(e.getMessage());
-            }
-        }
-
-    }
-
-    @CommandOther
-    public void floodCheck(TelegramLongPollingEngine engine,
-                           UserBotSession userBotSession,
-                           @ParamName("chatId") Long chatId) {
-        long helloTime = (Long) userBotSession.getData();
-        if (System.currentTimeMillis() - helloTime < 1800000) {
-            var send = new SendMessage();
-            send.setChatId(chatId);
-            send.setText("Не нужно флудить");
-            try {
-                engine.execute(send);
-            } catch (TelegramApiException e) {
-                log.error(e.getMessage());
+                justStarted = false;
+            } else if (!floodCatched) {
+                MessageOperations.sendNewMessage(
+                        chatId,
+                        DONT_FLOOD,
+                        engine);
+                floodCatched = true;
             }
         } else {
-            var send = new SendMessage();
-            send.setChatId(chatId);
-            send.setText("hello     ");
-            try {
-                engine.execute(send);
-            } catch (TelegramApiException e) {
-                log.error(e.getMessage());
-            }
+            MessageOperations.sendNewMessage(
+                    chatId,
+                    HELLO,
+                    engine);
+            helloTime = System.currentTimeMillis();
+            floodCatched = true;
         }
 
-
     }
+
 }
