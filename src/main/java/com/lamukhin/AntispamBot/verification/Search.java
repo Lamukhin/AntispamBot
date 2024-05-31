@@ -42,12 +42,12 @@ public class Search implements Callable<Integer> {
             for (String wordInDictionary : wordDictionary.keySet()) {
                 //we don't compare words if their length's delta is more than 3 chars
                 if (Math.abs(currentWord.length() - wordInDictionary.length()) > 3) {
-                    log.warn("дельта ту биг");
+                    log.warn("The delta of words is too big for a comparison.");
                     break;
                 }
 
                 double coefOfCurrentWord = twoWordsCrossesCoef(currentWord, wordInDictionary);
-                log.warn("кэф найденного слова {}", coefOfCurrentWord);
+                log.warn("Coefficient of the current word: {}", coefOfCurrentWord);
 
                 if (coefOfCurrentWord > forCurrentWord) {
                     //if a found word EXISTS in our dictionary, we return its value.
@@ -72,7 +72,7 @@ public class Search implements Callable<Integer> {
                 int amountAtDictionary = countItem(wordInDictionary.toCharArray(), currentCharInWord);
                 int minCount = Math.min(amountAtWord, amountAtDictionary);
                 for (int i = 0; i < minCount; i++) {
-                    log.warn("найдено совпадение символа {} в слове {}", currentCharInWord, currentWord);
+                    log.warn("Matched \'{}\' has found in word \"{}\"", currentCharInWord, currentWord);
                     crosses.add(currentCharInWord);
                     inWordCrossesCounter++;
                 }
