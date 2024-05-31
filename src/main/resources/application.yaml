@@ -8,9 +8,6 @@ spring:
     password: SomePassword1997
     driver-class-name: org.postgresql.Driver
 
-  jpa:
-    hibernate:
-      ddl-auto: create
 
   jooq:
     sql-dialect: Postgres

@@ -1,6 +1,7 @@
 package com.lamukhin.AntispamBot.db.entity;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "message_count")
@@ -8,7 +9,7 @@ public class MessageCountEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private UUID id;
     @Column(name="id_chat_telegram")
     private long idChatTelegram;
     private long counter;
@@ -20,7 +21,7 @@ public class MessageCountEntity {
         this.counter = counter;
     }
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
@@ -32,7 +33,7 @@ public class MessageCountEntity {
         return counter;
     }
 
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

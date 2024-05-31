@@ -5,23 +5,21 @@ import com.lamukhin.AntispamBot.db.repo.MessageCountRepo;
 import com.lamukhin.AntispamBot.service.interfaces.MessageCountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
-//@EnableAsync
 public class MessageCountServiceDefault implements MessageCountService {
 
     private final Logger log = LoggerFactory.getLogger(MessageCountServiceDefault.class);
     private final MessageCountRepo messageCountRepo;
-    private Map<String, Integer> cachedUsers = new HashMap<>();
+    private Map<String, MessageCountEntity> cachedUsers = new HashMap<>();
 
     @PostConstruct
     private void fetchUsersFromDatabase(){
@@ -32,7 +30,7 @@ public class MessageCountServiceDefault implements MessageCountService {
             result.forEach(element ->
                     cachedUsers.put(
                             String.valueOf(element.getIdChatTelegram()),
-                            (int) element.getCounter()
+                            element
                     )
             );
             log.warn("Data has successfully fetched from the Database, {} records found.", cachedUsers.size());
@@ -41,31 +39,42 @@ public class MessageCountServiceDefault implements MessageCountService {
 
     @Override
     public Integer amountOfMessages(long idChatTelegram) {
-        return cachedUsers.get(String.valueOf(idChatTelegram));
+        MessageCountEntity user = cachedUsers.get(String.valueOf(idChatTelegram));
+        if (user == null){
+            return null;
+        }
+        //TODO: разобраться с long и int. Нахер нам и не нужон ваш этот лонг!
+        return Math.toIntExact(user.getCounter());
     }
 
     @Override
     public void saveNewMember(long idChatTelegram) {
-        cachedUsers.put(String.valueOf(idChatTelegram), 1);
+        MessageCountEntity user = new MessageCountEntity(
+                idChatTelegram,
+                1
+        );
+        cachedUsers.put(String.valueOf(idChatTelegram), user);
     }
 
     @Override
-    public void updateAmount(long userTelegramId) {
-        int increasedAmount = cachedUsers.get(String.valueOf(userTelegramId)) + 1;
-        cachedUsers.put(String.valueOf(userTelegramId), increasedAmount);
+    public void updateAmount(long idChatTelegram) {
+        MessageCountEntity user = cachedUsers.get(String.valueOf(idChatTelegram));
+        user.setCounter(user.getCounter() + 1);
+        cachedUsers.put(String.valueOf(idChatTelegram), user);
     }
 
-    //@Async
-    @Scheduled(fixedDelay = 60 * 60 * 1000) //every hour
+    @Scheduled(fixedDelay = 20 * 1000) //every hour
     protected void saveCacheToDatabase() {
         cachedUsers.forEach((key, value) ->
-                messageCountRepo.save(
-                        new MessageCountEntity(
-                                Long.parseLong(key),
-                                value
-                        )
-                )
+                messageCountRepo.save(value)
         );
+        log.warn("Cached users successfully saved to DB {}", cachedUsers.size());
+    }
+
+    @PreDestroy
+    private void saveAllDataToDb(){
+        saveCacheToDatabase();
+        log.warn("Saving all the data before destroying the bean \"MessageCountService\"");
     }
 
 

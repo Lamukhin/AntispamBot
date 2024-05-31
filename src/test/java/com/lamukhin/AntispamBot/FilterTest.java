@@ -10,8 +10,6 @@ import java.util.Arrays;
 @SpringBootTest
 public class FilterTest {
 
-    @Autowired
-    SpamCheckingServiceSecond spamCheckingServiceSecond;
 
     @Test
     void messageFilterTest() {
