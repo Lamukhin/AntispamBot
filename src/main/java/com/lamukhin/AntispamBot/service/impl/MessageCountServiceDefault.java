@@ -6,6 +6,7 @@ import com.lamukhin.AntispamBot.service.interfaces.MessageCountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+//@EnableAsync
 public class MessageCountServiceDefault implements MessageCountService {
 
     private final Logger log = LoggerFactory.getLogger(MessageCountServiceDefault.class);
@@ -53,7 +55,7 @@ public class MessageCountServiceDefault implements MessageCountService {
         cachedUsers.put(String.valueOf(userTelegramId), increasedAmount);
     }
 
-    @Async
+    //@Async
     @Scheduled(fixedDelay = 60 * 60 * 1000) //every hour
     protected void saveCacheToDatabase() {
         cachedUsers.forEach((key, value) ->

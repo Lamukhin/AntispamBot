@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
@@ -13,7 +14,6 @@ import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import javax.annotation.PreDestroy;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import com.lamukhin.AntispamBot.verification.Search;
 
 @Service
@@ -39,7 +39,6 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
 
     @Override
     public void checkUpdate(Update update, TelegramLongPollingEngine engine) {
-        AtomicInteger atomicCounter = new AtomicInteger();
         wordDictionary.put("sex", 1);
         symbolsDictionary.put('@', 1);
         symbolsDictionary.put('+', 1);
@@ -66,14 +65,20 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             double coefOfAllMessage = (double) totalMessageScore / wordsOfMessage.length;
             if (isSpam(coefOfAllMessage, wordsOfMessage.length)){
                 System.out.println("IT IS SPAM");
-                var send = DeleteMessage.builder()
+                var sendReply = SendMessage.builder()
+                        .chatId(update.getMessage().getChatId())
+                        .replyToMessageId(update.getMessage().getMessageId())
+                        .text("Это спам!")
+                        .build();
+                engine.executeNotException(sendReply);
+
+                var sendDelete = DeleteMessage.builder()
                         .chatId(update.getMessage().getChatId())
                         .messageId(update.getMessage().getMessageId())
                         .build();
-                engine.executeNotException(send);
+                engine.executeNotException(sendDelete);
             }
             System.out.println("IT IS NOT SPAM");
-
         }
     }
 

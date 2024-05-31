@@ -12,6 +12,7 @@ import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import java.util.*;
 
 //@Service
+@Deprecated
 public class SpamCheckingServiceSecond implements SpamCheckingService {
 
     private final Logger log = LoggerFactory.getLogger(SpamCheckingServiceDefault.class);

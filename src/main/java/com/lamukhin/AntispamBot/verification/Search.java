@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.*;
 import java.util.concurrent.Callable;
 
+/*
+    This Callable class contains the main method of checking if a current word is banned or not.
+ */
+
 public class Search implements Callable<Integer> {
 
     private final Logger log = LoggerFactory.getLogger(Search.class);

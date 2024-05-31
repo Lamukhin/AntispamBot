@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
+/*
+    Root service of the application. "processUpdate()" method processes an every income message.
+ */
 
 @Service
 public class UpdateProcessingServiceDefault implements UpdateProcessingService {
