@@ -43,7 +43,7 @@ public class MessageCountServiceDefault implements MessageCountService {
         if (user == null){
             return null;
         }
-        //TODO: разобраться с long и int. Нахер нам и не нужон ваш этот лонг!
+        //TODO: разобраться с long и int. Нахер нам и не нужон этот ваш лонг!
         return Math.toIntExact(user.getCounter());
     }
 
