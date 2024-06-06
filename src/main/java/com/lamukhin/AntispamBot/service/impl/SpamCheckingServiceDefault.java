@@ -1,20 +1,27 @@
 package com.lamukhin.AntispamBot.service.impl;
 
 import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
-import okhttp3.Call;
+import com.lamukhin.AntispamBot.util.MessageOperations;
+import com.lamukhin.AntispamBot.verification.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
+import ru.wdeath.managerbot.lib.bot.callback.CallbackData;
+import ru.wdeath.managerbot.lib.bot.callback.CallbackDataSender;
+import ru.wdeath.managerbot.lib.util.KeyboardUtil;
 
 import javax.annotation.PreDestroy;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
-import com.lamukhin.AntispamBot.verification.Search;
 
 @Service
 public class SpamCheckingServiceDefault implements SpamCheckingService {
@@ -55,7 +62,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
 
             try {
                 List<Future<Integer>> futures = executorService.invokeAll(tasks);
-                for (Future<Integer> currentFuture : futures){
+                for (Future<Integer> currentFuture : futures) {
                     totalMessageScore += currentFuture.get();
                 }
             } catch (InterruptedException | RuntimeException | ExecutionException ex) {
@@ -63,14 +70,46 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             }
 
             double coefOfAllMessage = (double) totalMessageScore / wordsOfMessage.length;
-            if (isSpam(coefOfAllMessage, wordsOfMessage.length)){
+
+            if (isSpam(coefOfAllMessage, wordsOfMessage.length)) {
+
+                //TODO: необходимо доработать Вовину либо, потому что без этого работа с колбэками - пытка.
+//                String response = "Подозреваю, это спам. \"Вхождение\" сообщения в словарь банвордов - "
+//                        + (int) (coefOfAllMessage * 100) + " %.\n" +
+//                        "Админ, разберись! Баним его?\n"
+//                        + "/yes  /no";
+
+//                final CallbackDataSender[][] yesNoButtons = {{
+//                        new CallbackDataSender("Yes", new CallbackData("judgement", "y " + update.getMessage().getFrom().getId())),
+//                        new CallbackDataSender("No", new CallbackData("judgement", "n "))
+//                }};
+//                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+//                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+//                List<InlineKeyboardButton> row = new ArrayList<>();
+//                InlineKeyboardButton button = new InlineKeyboardButton();
+//                button.setText("Да");
+//                button.setCallbackData("{\"command\":\"judgement\", \"data\":\"y "+ update.getMessage().getFrom().getId() +"\"}");
+//                row.add(button);
+//                button = new InlineKeyboardButton();
+//                button.setText("Нет");
+//                button.setCallbackData("{\"command\":\"judgement\", \"data\":\"n "+ update.getMessage().getFrom().getId() +"\"}");
+//                row.add(button);
+//                rowsInline.add(row);
+//                inlineKeyboardMarkup.setKeyboard(rowsInline);
+
+//                UserBotSession userBotSession = new UserBotSession(
+//                        "judgement",
+//                        TypeCommand.CALLBACK,
+//                        260113861l
+//                );
+
+                MessageOperations.replyToMessage(
+                        update.getMessage().getChatId(),
+                        response,
+                        update.getMessage().getMessageId(),
+                        engine);
+
                 System.out.println("IT IS SPAM");
-                var sendReply = SendMessage.builder()
-                        .chatId(update.getMessage().getChatId())
-                        .replyToMessageId(update.getMessage().getMessageId())
-                        .text("Это спам!")
-                        .build();
-                engine.executeNotException(sendReply);
 
                 var sendDelete = DeleteMessage.builder()
                         .chatId(update.getMessage().getChatId())
@@ -92,13 +131,13 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
 
     // yes, im bad at math
     private boolean isSpam(double coefOfAllMessage, int amountOfWords) {
-        if ((amountOfWords >= 4)&&(amountOfWords <= 6)){
+        if ((amountOfWords >= 4) && (amountOfWords <= 6)) {
             return coefOfAllMessage >= for4To6Length;
         }
-        if ((amountOfWords >= 7)&&(amountOfWords <= 20)){
+        if ((amountOfWords >= 7) && (amountOfWords <= 20)) {
             return coefOfAllMessage >= for7To20Length;
         }
-        if (amountOfWords >= 21){
+        if (amountOfWords >= 21) {
             return coefOfAllMessage >= forMoreThan21Length;
         }
         return false;

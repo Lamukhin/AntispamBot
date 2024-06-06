@@ -9,7 +9,7 @@ import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
 import ru.wdeath.managerbot.lib.bot.annotations.ParamName;
 
-import static com.lamukhin.AntispamBot.util.ResponseMessage.*;
+import static com.lamukhin.AntispamBot.util.ResponseMessage.HELLO;
 
 @Component
 @CommandNames("/ping_bot")
@@ -17,36 +17,17 @@ public class StartCommand {
 
     private final Logger log = LoggerFactory.getLogger(StartCommand.class);
     private long helloTime = System.currentTimeMillis();
-    private boolean justStarted = true;
-    private boolean floodCatched = false;
 
     @CommandFirst
     public void greeting(TelegramLongPollingEngine engine,
                          @ParamName("chatId") Long chatId) {
-        if (System.currentTimeMillis() - helloTime < 1800000) {
-            if (justStarted) {
-                MessageOperations.sendNewMessage(
-                        chatId,
-                        HELLO,
-                        engine);
-                helloTime = System.currentTimeMillis();
-                justStarted = false;
-            } else if (!floodCatched) {
-                MessageOperations.sendNewMessage(
-                        chatId,
-                        DONT_FLOOD,
-                        engine);
-                floodCatched = true;
-            }
-        } else {
+        if (System.currentTimeMillis() - helloTime >= 1800000) {
             MessageOperations.sendNewMessage(
                     chatId,
                     HELLO,
                     engine);
             helloTime = System.currentTimeMillis();
-            floodCatched = true;
         }
-
     }
 
 }

@@ -28,6 +28,27 @@ public class MessageOperations {
         engine.executeNotException(send);
     }
 
+    public static void replyToMessage(Long chatId, String text, int messageId, TelegramLongPollingEngine engine) {
+        var send = SendMessage
+                .builder()
+                .chatId(chatId)
+                .text(text)
+                .replyToMessageId(messageId)
+                .build();
+        engine.executeNotException(send);
+    }
+
+    public static void replyToMessage(Long chatId, String text, InlineKeyboardMarkup markup, int messageId, TelegramLongPollingEngine engine) {
+        var send = SendMessage
+                .builder()
+                .chatId(chatId)
+                .text(text)
+                .replyToMessageId(messageId)
+                .replyMarkup(markup)
+                .build();
+        engine.executeNotException(send);
+    }
+
     public static void editCurrentMessage(Long chatId, String text, InlineKeyboardMarkup markup, TelegramLongPollingEngine engine, Update update) {
         var send = EditMessageText
                 .builder()
