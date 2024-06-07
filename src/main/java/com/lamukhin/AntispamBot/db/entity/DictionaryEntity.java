@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "dictionary_entity")
+@Table(name = "dictionary")
 public final class DictionaryEntity {
 
     @Id
