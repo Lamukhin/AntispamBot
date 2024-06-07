@@ -23,18 +23,20 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
     @Override
     public void processUpdate(TelegramLongPollingEngine engine, Update update) {
         //TODO: внедрить jooq. пока не вышло, так как проблема с плагином. использую jpa
-        if (update.hasMessage()) {
-            long userTelegramId = update.getMessage().getFrom().getId();
-            Integer amount = messageCountService.amountOfMessages(userTelegramId);
+        if (update.getMessage().getChat().isGroupChat()) {
+            if (update.hasMessage()) {
+                long userTelegramId = update.getMessage().getFrom().getId();
+                Integer amount = messageCountService.amountOfMessages(userTelegramId);
 
-            if ((amount != null) && (amount >= 10)) {
-                return;
-            } else if (amount == null) {
-                messageCountService.saveNewMember(userTelegramId);
-                spamCheckingService.checkUpdate(update, engine);
-            } else {
-                messageCountService.updateAmount(userTelegramId);
-                spamCheckingService.checkUpdate(update, engine);
+                if ((amount != null) && (amount >= 10)) {
+                    return;
+                } else if (amount == null) {
+                    messageCountService.saveNewMember(userTelegramId);
+                    spamCheckingService.checkUpdate(update, engine);
+                } else {
+                    messageCountService.updateAmount(userTelegramId);
+                    spamCheckingService.checkUpdate(update, engine);
+                }
             }
         }
 

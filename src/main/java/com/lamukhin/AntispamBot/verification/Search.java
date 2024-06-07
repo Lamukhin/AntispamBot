@@ -16,43 +16,41 @@ public class Search implements Callable<Integer> {
     private final Logger log = LoggerFactory.getLogger(Search.class);
     private final String currentWord;
     private final Map<String, Integer> wordDictionary;
-    private final Map<Character, Integer> symbolsDictionary;
 
     @Value("${coefficients.of_current_word}")
     private double forCurrentWord;
 
-    public Search(String currentWord, Map<String, Integer> dictionary, Map<Character, Integer> symbolsDictionary) {
+    public Search(String currentWord, Map<String, Integer> dictionary) {
         this.currentWord = currentWord;
         this.wordDictionary = dictionary;
-        this.symbolsDictionary = symbolsDictionary;
     }
 
     @Override
     public Integer call() {
         try {
-            //search for banned symbols
-            if (currentWord.length() < 3){ //словом считается строка от 3 символов, нам не нужны предлоги
-                for (char ch : currentWord.toCharArray()){
-                    if(symbolsDictionary.containsKey(ch)){
-                        return symbolsDictionary.get(ch);
-                    }
-                }
+            //search for banned symbols and emoji
+            if(currentWord.equals("emoji")){
+                return 1;
             }
-            //search for banned words
-            for (String wordInDictionary : wordDictionary.keySet()) {
-                //we don't compare words if their length's delta is more than 3 chars
-                if (Math.abs(currentWord.length() - wordInDictionary.length()) > 3) {
-                    log.warn("The delta of words is too big for a comparison.");
-                    break;
-                }
+            if (currentWord.length() >= 3) { //словом считается строка от 3 символов, нам не нужны предлоги
 
-                double coefOfCurrentWord = twoWordsCrossesCoef(currentWord, wordInDictionary);
-                log.warn("Coefficient of the current word: {}", coefOfCurrentWord);
+                //search for banned words
+                for (String wordInDictionary : wordDictionary.keySet()) {
+                    //we don't compare words if their length's delta is more than 3 chars
+                    if (Math.abs(currentWord.length() - wordInDictionary.length()) > 3) {
+                        log.warn("The delta of words is too big for a comparison.");
+                        break;
+                    }
 
-                if (coefOfCurrentWord > forCurrentWord) {
-                    //if a found word EXISTS in our dictionary, we return its value.
-                    // otherwise we return just 1, which means that found similar word
-                    return coefOfCurrentWord == 1.0 ? wordDictionary.get(wordInDictionary) : 1;
+
+                    double coefOfCurrentWord = twoWordsCrossesCoef(currentWord, wordInDictionary);
+                    log.warn("Coefficient of the current word: {}", coefOfCurrentWord);
+
+                    if (coefOfCurrentWord > forCurrentWord) {
+                        //if a found word EXISTS in our dictionary, we return its value.
+                        // otherwise we return just 1, which means that found similar word
+                        return coefOfCurrentWord == 1.0 ? wordDictionary.get(wordInDictionary) : 1;
+                    }
                 }
             }
             log.warn("The word \"{}\" has not found in our dictionary", currentWord);

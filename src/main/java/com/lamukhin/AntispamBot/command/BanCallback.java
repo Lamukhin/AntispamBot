@@ -12,7 +12,7 @@ import ru.wdeath.managerbot.lib.bot.command.CommandContext;
 import java.util.HashSet;
 import java.util.Set;
 
-@Component
+//@Component
 @CommandNames("/yes")
 //TODO: доработать либу wdeath, чтобы была возможность работать с сессиями в группах
 public class BanCallback {
@@ -25,9 +25,11 @@ public class BanCallback {
 
     @CommandFirst
     public void judge(TelegramLongPollingEngine engine,
-                      @ParamName("userId") Long userId){
+                      @ParamName("userId") Long userId,
+                      CommandContext context){
         admins.add(260113861l);
         log.warn("Забанили чела с айди");
+        String data = (String) context.getData();
         if ((admins.contains(userId))&&(data.startsWith("y"))){
             //banim
             String getId = data.split(" ")[1];

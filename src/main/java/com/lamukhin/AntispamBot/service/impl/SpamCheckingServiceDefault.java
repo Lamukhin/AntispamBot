@@ -9,26 +9,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
-import ru.wdeath.managerbot.lib.bot.callback.CallbackData;
-import ru.wdeath.managerbot.lib.bot.callback.CallbackDataSender;
-import ru.wdeath.managerbot.lib.util.KeyboardUtil;
 
 import javax.annotation.PreDestroy;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 @Service
 public class SpamCheckingServiceDefault implements SpamCheckingService {
 
     private final Logger log = LoggerFactory.getLogger(SpamCheckingServiceDefault.class);
-    private final Map<Character, Integer> symbolsDictionary = new HashMap<>();
-    private final Map<String, Integer> wordDictionary = new HashMap<>();
+    private Map<String, Integer> wordDictionary = new HashMap<>();
 
     @Value("${coefficients.for_4_to_6_length}")
     private double for4To6Length;
@@ -47,16 +38,24 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
     @Override
     public void checkUpdate(Update update, TelegramLongPollingEngine engine) {
         wordDictionary.put("sex", 1);
-        symbolsDictionary.put('@', 1);
-        symbolsDictionary.put('+', 1);
-        symbolsDictionary.put('$', 1);
         if ((update.hasMessage()) && (update.getMessage().hasText())) {
             int totalMessageScore = 0;
             String[] wordsOfMessage = invokeWordsFromRawMessage(update.getMessage().getText());
 
+//            MessageOperations.sendNewMessage(
+//                    update.getMessage().getChatId(),
+//                    update.getMessage().getText(),
+//                    engine);
+//
+//            MessageOperations.sendNewMessage(
+//                    update.getMessage().getChatId(),
+//                    Arrays.toString(wordsOfMessage),
+//                    engine);
+//            log.warn("выслали месагу");
+
             List<Callable<Integer>> tasks = new ArrayList<>();
             for (String word : wordsOfMessage) {
-                Search search = new Search(word, wordDictionary, symbolsDictionary);
+                Search search = new Search(word, wordDictionary);
                 tasks.add(search);
             }
 
@@ -74,10 +73,64 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             if (isSpam(coefOfAllMessage, wordsOfMessage.length)) {
 
                 //TODO: необходимо доработать Вовину либо, потому что без этого работа с колбэками - пытка.
-//                String response = "Подозреваю, это спам. \"Вхождение\" сообщения в словарь банвордов - "
-//                        + (int) (coefOfAllMessage * 100) + " %.\n" +
-//                        "Админ, разберись! Баним его?\n"
-//                        + "/yes  /no";
+                String response = "Подозреваю, это спам. \"Вхождение\" сообщения в словарь банвордов - "
+                        + (int) (coefOfAllMessage * 100) + " %.";
+
+                MessageOperations.replyToMessage(
+                        update.getMessage().getChatId(),
+                        response,
+                        update.getMessage().getMessageId(),
+                        engine);
+
+                System.out.println("IT IS SPAM");
+
+                var sendDelete = DeleteMessage.builder()
+                        .chatId(update.getMessage().getChatId())
+                        .messageId(update.getMessage().getMessageId())
+                        .build();
+                engine.executeNotException(sendDelete);
+                saveMessageIntoDictionary(wordsOfMessage);
+            }
+        }
+    }
+
+    //TODO: вынести в отдельный сервис
+    public void saveMessageIntoDictionary(String[] wordsOfMessage) {
+        Arrays.stream(wordsOfMessage)
+                .forEach(word -> wordDictionary.put(word, 1));
+        log.warn("current dictionaty {}", wordDictionary);
+    }
+
+    //TODO: вынести в отдельный сервис
+    public String[] invokeWordsFromRawMessage(String incomeMessage) {
+        incomeMessage = incomeMessage
+                .toLowerCase()
+                .replaceAll("\\n", " ")
+                .replaceAll("[\\p{So}\\p{Cn}]", "emoji")
+                .trim();
+        return incomeMessage.split(" ");
+    }
+
+    // yes, im bad at math
+    private boolean isSpam(double coefOfAllMessage, int amountOfWords) {
+        if ((amountOfWords >= 4) && (amountOfWords <= 6)) {
+            return coefOfAllMessage >= for4To6Length;
+        }
+        if ((amountOfWords >= 7) && (amountOfWords <= 20)) {
+            return coefOfAllMessage >= for7To20Length;
+        }
+        if (amountOfWords >= 21) {
+            return coefOfAllMessage >= forMoreThan21Length;
+        }
+        return false;
+    }
+
+
+    @PreDestroy
+    private void destroyExecutorService() {
+        executorService.shutdown();
+    }
+
 
 //                final CallbackDataSender[][] yesNoButtons = {{
 //                        new CallbackDataSender("Yes", new CallbackData("judgement", "y " + update.getMessage().getFrom().getId())),
@@ -102,50 +155,4 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
 //                        TypeCommand.CALLBACK,
 //                        260113861l
 //                );
-
-                MessageOperations.replyToMessage(
-                        update.getMessage().getChatId(),
-                        response,
-                        update.getMessage().getMessageId(),
-                        engine);
-
-                System.out.println("IT IS SPAM");
-
-                var sendDelete = DeleteMessage.builder()
-                        .chatId(update.getMessage().getChatId())
-                        .messageId(update.getMessage().getMessageId())
-                        .build();
-                engine.executeNotException(sendDelete);
-            }
-            System.out.println("IT IS NOT SPAM");
-        }
-    }
-
-    private String[] invokeWordsFromRawMessage(String incomeMessage) {
-        incomeMessage = incomeMessage
-                .toLowerCase()
-                .replaceAll("[^a-zA-Zа-яА-Я0-9\s]", " ")
-                .trim();
-        return incomeMessage.split(" ");
-    }
-
-    // yes, im bad at math
-    private boolean isSpam(double coefOfAllMessage, int amountOfWords) {
-        if ((amountOfWords >= 4) && (amountOfWords <= 6)) {
-            return coefOfAllMessage >= for4To6Length;
-        }
-        if ((amountOfWords >= 7) && (amountOfWords <= 20)) {
-            return coefOfAllMessage >= for7To20Length;
-        }
-        if (amountOfWords >= 21) {
-            return coefOfAllMessage >= forMoreThan21Length;
-        }
-        return false;
-    }
-
-
-    @PreDestroy
-    private void destroyExecutorService() {
-        executorService.shutdown();
-    }
 }
