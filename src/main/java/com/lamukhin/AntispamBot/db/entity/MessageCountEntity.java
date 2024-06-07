@@ -6,14 +6,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "message_count")
-public class MessageCountEntity {
+public final class MessageCountEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-
-
-
     @Column(name="id_chat_telegram")
     private long idChatTelegram;
     @Column(name="counter")
@@ -38,18 +35,6 @@ public class MessageCountEntity {
         return counter;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public void setIdChatTelegram(long idChatTelegram) {
-        this.idChatTelegram = idChatTelegram;
-    }
-
-    public void setCounter(long counter) {
-        this.counter = counter;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -61,5 +46,9 @@ public class MessageCountEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, idChatTelegram, counter);
+    }
+
+    public void setCounter(long counter) {
+        this.counter = counter;
     }
 }

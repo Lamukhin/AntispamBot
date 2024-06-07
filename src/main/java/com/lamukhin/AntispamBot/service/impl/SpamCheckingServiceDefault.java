@@ -19,7 +19,7 @@ import java.util.concurrent.*;
 public class SpamCheckingServiceDefault implements SpamCheckingService {
 
     private final Logger log = LoggerFactory.getLogger(SpamCheckingServiceDefault.class);
-    private Map<String, Integer> wordDictionary = new HashMap<>();
+
 
     @Value("${coefficients.for_4_to_6_length}")
     private double for4To6Length;
@@ -96,10 +96,8 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
 
     //TODO: вынести в отдельный сервис
     public void saveMessageIntoDictionary(String[] wordsOfMessage) {
-        скопировать это в новосозданный сервис
-        Arrays.stream(wordsOfMessage)
-                .forEach(word -> wordDictionary.put(word, 1));
-        log.warn("current dictionaty {}", wordDictionary);
+
+
     }
 
     //TODO: вынести в отдельный сервис
