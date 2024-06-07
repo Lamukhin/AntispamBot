@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 //@Component
+@Deprecated
 @CommandNames("/yes")
 //TODO: доработать либу wdeath, чтобы была возможность работать с сессиями в группах
 public class BanCallback {

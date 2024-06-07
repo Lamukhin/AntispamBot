@@ -10,13 +10,13 @@ import ru.wdeath.managerbot.lib.bot.interfaces.HandlerBotUpdate;
 
 /*
     This is a root component for all application.
-    Every message processing starts here.
+    Every group chat message processing starts here.
  */
 
 @Component
-public class UpdateListener implements HandlerBotUpdate {
+public class CustomUpdateListener implements HandlerBotUpdate {
 
-    private final Logger log = LoggerFactory.getLogger(UpdateListener.class);
+    private final Logger log = LoggerFactory.getLogger(CustomUpdateListener.class);
     private final UpdateProcessingService updateProcessingService;
 
     @Override
@@ -34,7 +34,7 @@ public class UpdateListener implements HandlerBotUpdate {
         return 201;
     }
 
-    public UpdateListener(UpdateProcessingService updateProcessingService) {
+    public CustomUpdateListener(UpdateProcessingService updateProcessingService) {
         this.updateProcessingService = updateProcessingService;
     }
 }

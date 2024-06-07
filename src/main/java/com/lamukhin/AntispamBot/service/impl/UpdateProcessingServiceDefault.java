@@ -19,7 +19,9 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
     private final MessageCountService messageCountService;
     private final SpamCheckingService spamCheckingService;
 
-    //важная пометка, что тут обрабатываются сообщения только из групповых чатов
+    /* важная пометка: тут обрабатываются сообщения только из групповых чатов.
+        личные сообщения обрабатываются либой wdeath
+    */
     @Override
     public void processGroupChatUpdate(TelegramLongPollingEngine engine, Update update) {
         //TODO: внедрить jooq. пока не вышло, так как проблема с плагином. использую jpa

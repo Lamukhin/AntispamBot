@@ -96,6 +96,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
 
     //TODO: вынести в отдельный сервис
     public void saveMessageIntoDictionary(String[] wordsOfMessage) {
+        скопировать это в новосозданный сервис
         Arrays.stream(wordsOfMessage)
                 .forEach(word -> wordDictionary.put(word, 1));
         log.warn("current dictionaty {}", wordDictionary);
