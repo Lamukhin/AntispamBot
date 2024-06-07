@@ -1,6 +1,7 @@
 package com.lamukhin.AntispamBot.service.impl;
 
 import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
+import com.lamukhin.AntispamBot.service.interfaces.TextService;
 import com.lamukhin.AntispamBot.util.MessageOperations;
 import com.lamukhin.AntispamBot.verification.Search;
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ import java.util.concurrent.*;
 public class SpamCheckingServiceDefault implements SpamCheckingService {
 
     private final Logger log = LoggerFactory.getLogger(SpamCheckingServiceDefault.class);
-
+    private final TextService textService;
 
     @Value("${coefficients.for_4_to_6_length}")
     private double for4To6Length;
@@ -34,28 +35,20 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                 return thread;
             });
 
+    public SpamCheckingServiceDefault(TextService textService) {
+        this.textService = textService;
+    }
+
 
     @Override
     public void checkUpdate(Update update, TelegramLongPollingEngine engine) {
-        wordDictionary.put("sex", 1);
         if ((update.hasMessage()) && (update.getMessage().hasText())) {
             int totalMessageScore = 0;
             String[] wordsOfMessage = invokeWordsFromRawMessage(update.getMessage().getText());
 
-//            MessageOperations.sendNewMessage(
-//                    update.getMessage().getChatId(),
-//                    update.getMessage().getText(),
-//                    engine);
-//
-//            MessageOperations.sendNewMessage(
-//                    update.getMessage().getChatId(),
-//                    Arrays.toString(wordsOfMessage),
-//                    engine);
-//            log.warn("выслали месагу");
-
             List<Callable<Integer>> tasks = new ArrayList<>();
             for (String word : wordsOfMessage) {
-                Search search = new Search(word, wordDictionary);
+                Search search = new Search(word, textService.getCachedDictionary());
                 tasks.add(search);
             }
 

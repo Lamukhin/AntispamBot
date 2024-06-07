@@ -1,5 +1,6 @@
 package com.lamukhin.AntispamBot.verification;
 
+import com.lamukhin.AntispamBot.db.entity.DictionaryEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,12 +16,12 @@ public class Search implements Callable<Integer> {
 
     private final Logger log = LoggerFactory.getLogger(Search.class);
     private final String currentWord;
-    private final Map<String, Integer> wordDictionary;
+    private final Map<String, DictionaryEntity> wordDictionary;
 
     @Value("${coefficients.of_current_word}")
     private double forCurrentWord;
 
-    public Search(String currentWord, Map<String, Integer> dictionary) {
+    public Search(String currentWord, Map<String, DictionaryEntity> dictionary) {
         this.currentWord = currentWord;
         this.wordDictionary = dictionary;
     }
@@ -49,7 +50,7 @@ public class Search implements Callable<Integer> {
                     if (coefOfCurrentWord > forCurrentWord) {
                         //if a found word EXISTS in our dictionary, we return its value.
                         // otherwise we return just 1, which means that found similar word
-                        return coefOfCurrentWord == 1.0 ? wordDictionary.get(wordInDictionary) : 1;
+                        return coefOfCurrentWord == 1.0 ? wordDictionary.get(wordInDictionary).getValue() : 1;
                     }
                 }
             }

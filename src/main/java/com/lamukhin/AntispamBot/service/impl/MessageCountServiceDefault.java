@@ -25,7 +25,7 @@ public class MessageCountServiceDefault implements MessageCountService {
     private void fetchUsersFromDatabase(){
         List<MessageCountEntity> result = messageCountRepo.findAll();
         if (result.isEmpty()) {
-            log.warn("There is no data in Database, cache is empty now.");
+            log.warn("There is no users in Database, cache is empty now.");
         } else {
             result.forEach(element ->
                     cachedUsers.put(
@@ -33,7 +33,7 @@ public class MessageCountServiceDefault implements MessageCountService {
                             element
                     )
             );
-            log.warn("Data has successfully fetched from the Database, {} records found.", cachedUsers.size());
+            log.warn("Users has successfully fetched from the Database, {} records found.", cachedUsers.size());
         }
     }
 
