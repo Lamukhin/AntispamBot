@@ -22,7 +22,7 @@ public class UpdateListener implements HandlerBotUpdate {
     @Override
     public void update(TelegramLongPollingEngine engine, Update update) {
         try {
-            updateProcessingService.processUpdate(engine, update);
+            updateProcessingService.processGroupChatUpdate(engine, update);
         } catch (Exception ex) {
             log.error("Error during processing update: {}", ex.getMessage());
         }

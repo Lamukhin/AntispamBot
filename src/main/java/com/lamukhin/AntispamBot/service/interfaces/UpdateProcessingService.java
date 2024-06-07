@@ -5,5 +5,5 @@ import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 
 public interface UpdateProcessingService {
 
-    void processUpdate(TelegramLongPollingEngine engine, Update update);
+    void processGroupChatUpdate(TelegramLongPollingEngine engine, Update update);
 }
