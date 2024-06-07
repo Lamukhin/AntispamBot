@@ -2,6 +2,7 @@ package com.lamukhin.AntispamBot.command;
 
 import com.lamukhin.AntispamBot.service.impl.SpamCheckingServiceDefault;
 import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
+import com.lamukhin.AntispamBot.service.interfaces.TextService;
 import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +25,10 @@ public class SaveNewBanwordsCallback {
 
     public static final String NAME = "/new_banwords";
     private final Logger log = LoggerFactory.getLogger(SaveNewBanwordsCallback.class);
-    private final SpamCheckingServiceDefault spamCheckingServiceDefault;
+    private final TextService textService;
 
-    public SaveNewBanwordsCallback(SpamCheckingServiceDefault spamCheckingServiceDefault) {
-        this.spamCheckingServiceDefault = spamCheckingServiceDefault;
+    public SaveNewBanwordsCallback(TextService textService) {
+        this.textService = textService;
     }
 
 
@@ -42,13 +43,10 @@ public class SaveNewBanwordsCallback {
     }
 
     @CommandOther
-    public void saveNewBanwords(TelegramLongPollingEngine engine,
-                                @ParamName("chatId") Long chatId,
-                                CommandContext context){
-        log.warn("Пришла месага в команд озер для сейва {}", context.getUpdate().getMessage().getText());
-        //String data = (String) context.getData();
-        //String[] words = spamCheckingServiceDefault.invokeWordsFromRawMessage(data);
-        //spamCheckingServiceDefault.saveMessageIntoDictionary(words);
-        log.warn("сохранили новые банворды");
+    public void saveNewBanwords(CommandContext context){
+        String newMessage = context.getUpdate().getMessage().getText();
+        String[] words = textService.invokeWordsFromRawMessage(newMessage);
+        textService.saveMessageIntoDictionary(words);
+        log.warn("New banwords has been added into the dictionary.");
     }
 }

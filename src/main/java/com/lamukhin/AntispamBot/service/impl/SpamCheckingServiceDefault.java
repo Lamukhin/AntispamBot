@@ -44,7 +44,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
     public void checkUpdate(Update update, TelegramLongPollingEngine engine) {
         if ((update.hasMessage()) && (update.getMessage().hasText())) {
             int totalMessageScore = 0;
-            String[] wordsOfMessage = invokeWordsFromRawMessage(update.getMessage().getText());
+            String[] wordsOfMessage = textService.invokeWordsFromRawMessage(update.getMessage().getText());
 
             List<Callable<Integer>> tasks = new ArrayList<>();
             for (String word : wordsOfMessage) {
@@ -82,25 +82,9 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                         .messageId(update.getMessage().getMessageId())
                         .build();
                 engine.executeNotException(sendDelete);
-                saveMessageIntoDictionary(wordsOfMessage);
+                textService.saveMessageIntoDictionary(wordsOfMessage);
             }
         }
-    }
-
-    //TODO: вынести в отдельный сервис
-    public void saveMessageIntoDictionary(String[] wordsOfMessage) {
-
-
-    }
-
-    //TODO: вынести в отдельный сервис
-    public String[] invokeWordsFromRawMessage(String incomeMessage) {
-        incomeMessage = incomeMessage
-                .toLowerCase()
-                .replaceAll("\\n", " ")
-                .replaceAll("[\\p{So}\\p{Cn}]", "emoji")
-                .trim();
-        return incomeMessage.split(" ");
     }
 
     // yes, im bad at math
