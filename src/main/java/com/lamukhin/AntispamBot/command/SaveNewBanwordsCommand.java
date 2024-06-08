@@ -1,7 +1,5 @@
 package com.lamukhin.AntispamBot.command;
 
-import com.lamukhin.AntispamBot.service.impl.SpamCheckingServiceDefault;
-import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
 import com.lamukhin.AntispamBot.service.interfaces.TextService;
 import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.slf4j.Logger;
@@ -15,19 +13,15 @@ import ru.wdeath.managerbot.lib.bot.annotations.ParamName;
 import ru.wdeath.managerbot.lib.bot.command.CommandContext;
 import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-
 @Component
-@CommandNames(value = SaveNewBanwordsCallback.NAME, type = TypeCommand.MESSAGE)
-public class SaveNewBanwordsCallback {
+@CommandNames(value = SaveNewBanwordsCommand.NAME, type = TypeCommand.MESSAGE)
+public class SaveNewBanwordsCommand {
 
     public static final String NAME = "/new_banwords";
-    private final Logger log = LoggerFactory.getLogger(SaveNewBanwordsCallback.class);
+    private final Logger log = LoggerFactory.getLogger(SaveNewBanwordsCommand.class);
     private final TextService textService;
 
-    public SaveNewBanwordsCallback(TextService textService) {
+    public SaveNewBanwordsCommand(TextService textService) {
         this.textService = textService;
     }
 

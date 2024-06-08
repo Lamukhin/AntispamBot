@@ -30,22 +30,20 @@ public class Search implements Callable<Integer> {
     public Integer call() {
         try {
             //search for banned symbols and emoji
-            if(currentWord.equals("emoji")){
+            if(currentWord.contains("emoji")){
                 return 1;
             }
-            if (currentWord.length() >= 3) { //словом считается строка от 3 символов, нам не нужны предлоги
-
-                //search for banned words
+            //search for banned words
+            if (currentWord.length() >= 3) { //a word is considered a string of at least 3 characters. we don't consider "prepositions"
                 for (String wordInDictionary : wordDictionary.keySet()) {
                     //we don't compare words if their length's delta is more than 3 chars
                     if (Math.abs(currentWord.length() - wordInDictionary.length()) > 3) {
-                        log.warn("The delta of words is too big for a comparison.");
-                        break;
+                        //log.warn("The delta of words is too big for a comparison. {} {}",currentWord,wordInDictionary);
+                        continue;
                     }
 
-
                     double coefOfCurrentWord = twoWordsCrossesCoef(currentWord, wordInDictionary);
-                    log.warn("Coefficient of the current word: {}", coefOfCurrentWord);
+                    log.warn("Coefficient of the current words: {} : \"{}\" and \"{}\"", coefOfCurrentWord, currentWord, wordInDictionary);
 
                     if (coefOfCurrentWord > forCurrentWord) {
                         //if a found word EXISTS in our dictionary, we return its value.
@@ -54,7 +52,7 @@ public class Search implements Callable<Integer> {
                     }
                 }
             }
-            log.warn("The word \"{}\" has not found in our dictionary", currentWord);
+            //log.warn("The word \"{}\" has not found in our dictionary", currentWord);
             return 0;
         } catch (Exception ex) {
             log.error("Exception inside CALL method: {}", ex.getMessage());
@@ -71,18 +69,17 @@ public class Search implements Callable<Integer> {
                 int amountAtDictionary = countItem(wordInDictionary.toCharArray(), currentCharInWord);
                 int minCount = Math.min(amountAtWord, amountAtDictionary);
                 for (int i = 0; i < minCount; i++) {
-                    log.warn("Matched \'{}\' has found in word \"{}\"", currentCharInWord, currentWord);
+                    //log.warn("Matched \'{}\' has found in word \"{}\"", currentCharInWord, currentWord);
                     crosses.add(currentCharInWord);
                     inWordCrossesCounter++;
                 }
             }
         }
 
-        double coefOfCurrentWord = (double)
+        return  (double)
                 ((inWordCrossesCounter/ currentWord.length())+(inWordCrossesCounter/wordInDictionary.length()))
                 / 2;
 
-        return  coefOfCurrentWord;
     }
 
     private int countItem(char[] list, char item) {
