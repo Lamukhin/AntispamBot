@@ -13,6 +13,10 @@ import ru.wdeath.managerbot.lib.bot.annotations.ParamName;
 import ru.wdeath.managerbot.lib.bot.command.CommandContext;
 import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 
+import java.util.Arrays;
+
+import static com.lamukhin.AntispamBot.util.ResponseMessage.NEW_WORDS_SAVED;
+
 @Component
 @CommandNames(value = SaveNewBanwordsCommand.NAME, type = TypeCommand.MESSAGE)
 public class SaveNewBanwordsCommand {
@@ -37,10 +41,31 @@ public class SaveNewBanwordsCommand {
     }
 
     @CommandOther
-    public void saveNewBanwords(CommandContext context){
+    public void saveNewBanwords(TelegramLongPollingEngine engine,
+                                @ParamName("chatId") Long chatId,
+                                CommandContext context){
         String newMessage = context.getUpdate().getMessage().getText();
         String[] words = textService.invokeWordsFromRawMessage(newMessage);
         textService.saveMessageIntoDictionary(words);
         log.warn("New banwords has been added into the dictionary.");
+        String newBanwordsSavedResponse = String.format(
+                NEW_WORDS_SAVED,
+                toBeautifulString(words),
+                textService.getCachedDictionary().size()
+        );
+        MessageOperations.sendNewMessage(
+                chatId,
+                newBanwordsSavedResponse,
+                engine
+        );
+    }
+
+    private String toBeautifulString(String[] words) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Arrays.asList(words).forEach(word -> {
+            stringBuilder.append(word);
+            stringBuilder.append(", ");
+        });
+        return stringBuilder.toString();
     }
 }

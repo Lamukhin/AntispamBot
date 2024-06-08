@@ -7,5 +7,9 @@ public class ResponseMessage {
             + "Дата запуска в работу: %s\n"
             + "Фидбек писать @ytrewq112233";
     public static final String DONT_FLOOD = "Флуд до добра не доводит! Я немногим ранее уже отвечал, "
-            +"сообщение наверняка осталось где-то \"выше\".";
+            + "сообщение наверняка осталось где-то \"выше\".";
+
+    public static final String SPAM_FOUND = "Скорее всего, это спам. \"Вхождение\" сообщения в словарь банвордов более %d %%.";
+    public static final String MAYBE_SPAM = "Подозреваю, это спам.\n @ytrewq112233, проверь и пингани админа.";
+    public static final String NEW_WORDS_SAVED = "Сохранил новые слова:\n %s\nСлов в словаре: %d";
 }

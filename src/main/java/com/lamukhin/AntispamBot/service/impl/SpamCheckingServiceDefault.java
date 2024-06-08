@@ -9,13 +9,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 
 import javax.annotation.PreDestroy;
 import java.util.*;
 import java.util.concurrent.*;
+
+import static com.lamukhin.AntispamBot.util.ResponseMessage.MAYBE_SPAM;
+import static com.lamukhin.AntispamBot.util.ResponseMessage.SPAM_FOUND;
 
 @Service
 public class SpamCheckingServiceDefault implements SpamCheckingService {
@@ -68,17 +70,17 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
 
             if (isSpam(coefOfAllMessage, wordsOfMessage.length)) {
 
-                //TODO: необходимо доработать Вовину либо, потому что без этого работа с колбэками - пытка.
-                String spamFoundResponse = "Подозреваю, это спам. \"Вхождение\" сообщения в словарь банвордов более "
-                        + (int) (coefOfAllMessage * 100) + " %.";
+                //TODO: необходимо доработать Вовину либу, потому что без этого работа с колбэками - пытка.
+                String spamFoundResponse = String.format(
+                        SPAM_FOUND,
+                        (int) (coefOfAllMessage * 100)
+                );
 
                 MessageOperations.replyToMessage(
                         update.getMessage().getChatId(),
                         spamFoundResponse,
                         update.getMessage().getMessageId(),
                         engine);
-
-                System.out.println("IT IS SPAM");
 
                 MessageOperations.deleteMessage(
                         update.getMessage().getChatId(),
@@ -91,6 +93,14 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                 */
                 metadataService.updateDeletedMessages(engine.getBotUsername());
                 textService.saveMessageIntoDictionary(wordsOfMessage);
+
+            } else if(coefOfAllMessage >= 0.4) {
+
+                MessageOperations.replyToMessage(
+                        update.getMessage().getChatId(),
+                        MAYBE_SPAM,
+                        update.getMessage().getMessageId(),
+                        engine);
             }
         }
     }
