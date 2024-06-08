@@ -22,7 +22,7 @@ public class MessageCountServiceDefault implements MessageCountService {
     private Map<String, MessageCountEntity> cachedUsers = new HashMap<>();
 
     @PostConstruct
-    private void fetchUsersFromDatabase(){
+    private void fetchUsersFromDatabase() {
         List<MessageCountEntity> result = messageCountRepo.findAll();
         if (result.isEmpty()) {
             log.warn("There is no users in Database, cache is empty now.");
@@ -40,7 +40,7 @@ public class MessageCountServiceDefault implements MessageCountService {
     @Override
     public Integer amountOfMessages(long idChatTelegram) {
         MessageCountEntity user = cachedUsers.get(String.valueOf(idChatTelegram));
-        if (user == null){
+        if (user == null) {
             return null;
         }
         //TODO: разобраться с long и int. Нахер нам и не нужон этот ваш лонг!
@@ -63,7 +63,7 @@ public class MessageCountServiceDefault implements MessageCountService {
         cachedUsers.put(String.valueOf(idChatTelegram), user);
     }
 
-    @Scheduled(fixedDelay = 20 * 1000) //every hour
+    @Scheduled(fixedDelay = 30 * 60 * 1000) //every 30m
     protected void saveCacheToDatabase() {
         cachedUsers.forEach((key, value) ->
                 messageCountRepo.save(value)
@@ -72,7 +72,7 @@ public class MessageCountServiceDefault implements MessageCountService {
     }
 
     @PreDestroy
-    private void saveAllDataToDb(){
+    private void saveAllDataToDb() {
         saveCacheToDatabase();
         log.warn("Saving all the data before destroying the bean \"MessageCountService\"");
     }

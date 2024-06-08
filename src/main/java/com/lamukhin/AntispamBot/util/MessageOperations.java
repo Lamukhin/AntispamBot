@@ -1,14 +1,19 @@
 package com.lamukhin.AntispamBot.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
-import ru.wdeath.managerbot.lib.bot.command.CommandContext;
 
 public class MessageOperations {
-    
+
+    private static final Logger log = LoggerFactory.getLogger(MessageOperations.class);
+
     public static void sendNewMessage(Long chatId, String text, InlineKeyboardMarkup markup, TelegramLongPollingEngine engine) {
         var send = SendMessage
                 .builder()
@@ -16,16 +21,24 @@ public class MessageOperations {
                 .text(text)
                 .replyMarkup(markup)
                 .build();
-        engine.executeNotException(send);
+        try {
+            engine.execute(send);
+        } catch (TelegramApiException e) {
+            log.error("Message operation is not executed: {}", e.getMessage());
+        }
     }
-    
+
     public static void sendNewMessage(Long chatId, String text, TelegramLongPollingEngine engine) {
         var send = SendMessage
                 .builder()
                 .chatId(chatId)
                 .text(text)
                 .build();
-        engine.executeNotException(send);
+        try {
+            engine.execute(send);
+        } catch (TelegramApiException e) {
+            log.error("Message operation is not executed: {}", e.getMessage());
+        }
     }
 
     public static void replyToMessage(Long chatId, String text, int messageId, TelegramLongPollingEngine engine) {
@@ -35,7 +48,11 @@ public class MessageOperations {
                 .text(text)
                 .replyToMessageId(messageId)
                 .build();
-        engine.executeNotException(send);
+        try {
+            engine.execute(send);
+        } catch (TelegramApiException e) {
+            log.error("Message operation is not executed: {}", e.getMessage());
+        }
     }
 
     public static void replyToMessage(Long chatId, String text, InlineKeyboardMarkup markup, int messageId, TelegramLongPollingEngine engine) {
@@ -46,7 +63,11 @@ public class MessageOperations {
                 .replyToMessageId(messageId)
                 .replyMarkup(markup)
                 .build();
-        engine.executeNotException(send);
+        try {
+            engine.execute(send);
+        } catch (TelegramApiException e) {
+            log.error("Message operation is not executed: {}", e.getMessage());
+        }
     }
 
     public static void editCurrentMessage(Long chatId, String text, InlineKeyboardMarkup markup, TelegramLongPollingEngine engine, Update update) {
@@ -57,7 +78,11 @@ public class MessageOperations {
                 .replyMarkup(markup)
                 .messageId(update.getCallbackQuery().getMessage().getMessageId())
                 .build();
-        engine.executeNotException(send);
+        try {
+            engine.execute(send);
+        } catch (TelegramApiException e) {
+            log.error("Message operation is not executed: {}", e.getMessage());
+        }
     }
 
     public static void editCurrentMessage(Long chatId, String text, TelegramLongPollingEngine engine, Update update) {
@@ -67,6 +92,23 @@ public class MessageOperations {
                 .text(text)
                 .messageId(update.getCallbackQuery().getMessage().getMessageId())
                 .build();
-        engine.executeNotException(send);
+        try {
+            engine.execute(send);
+        } catch (TelegramApiException e) {
+            log.error("Message operation is not executed: {}", e.getMessage());
+        }
+    }
+
+    public static void deleteMessage(Long chatId, int messageId, TelegramLongPollingEngine engine) {
+        var send = DeleteMessage
+                .builder()
+                .chatId(chatId)
+                .messageId(messageId)
+                .build();
+        try {
+            engine.execute(send);
+        } catch (TelegramApiException e) {
+            log.error("Message operation is not executed: {}", e.getMessage());
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.lamukhin.AntispamBot.service.impl;
 
+import com.lamukhin.AntispamBot.service.interfaces.MetadataService;
 import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
 import com.lamukhin.AntispamBot.service.interfaces.TextService;
 import com.lamukhin.AntispamBot.util.MessageOperations;
@@ -21,6 +22,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
 
     private final Logger log = LoggerFactory.getLogger(SpamCheckingServiceDefault.class);
     private final TextService textService;
+    private final MetadataService metadataService;
 
     @Value("${coefficients.for_4_to_6_length}")
     private double for4To6Length;
@@ -35,8 +37,9 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                 return thread;
             });
 
-    public SpamCheckingServiceDefault(TextService textService) {
+    public SpamCheckingServiceDefault(TextService textService, MetadataService metadataService) {
         this.textService = textService;
+        this.metadataService = metadataService;
     }
 
 
@@ -66,22 +69,27 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             if (isSpam(coefOfAllMessage, wordsOfMessage.length)) {
 
                 //TODO: необходимо доработать Вовину либо, потому что без этого работа с колбэками - пытка.
-                String response = "Подозреваю, это спам. \"Вхождение\" сообщения в словарь банвордов более "
+                String spamFoundResponse = "Подозреваю, это спам. \"Вхождение\" сообщения в словарь банвордов более "
                         + (int) (coefOfAllMessage * 100) + " %.";
 
                 MessageOperations.replyToMessage(
                         update.getMessage().getChatId(),
-                        response,
+                        spamFoundResponse,
                         update.getMessage().getMessageId(),
                         engine);
 
                 System.out.println("IT IS SPAM");
 
-                var sendDelete = DeleteMessage.builder()
-                        .chatId(update.getMessage().getChatId())
-                        .messageId(update.getMessage().getMessageId())
-                        .build();
-                engine.executeNotException(sendDelete);
+                MessageOperations.deleteMessage(
+                        update.getMessage().getChatId(),
+                        update.getMessage().getMessageId(),
+                        engine);
+                /*
+                тут архитектурный проёб, фиксить который я не собираюсь:
+                хоть и ооочень маловероятно, но deleteMessage может отъебнуть,
+                а значит апдейтить ничего не потребуется.
+                */
+                metadataService.updateDeletedMessages(engine.getBotUsername());
                 textService.saveMessageIntoDictionary(wordsOfMessage);
             }
         }
