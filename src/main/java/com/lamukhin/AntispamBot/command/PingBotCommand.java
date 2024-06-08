@@ -8,15 +8,17 @@ import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
 import ru.wdeath.managerbot.lib.bot.annotations.ParamName;
+import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 
 import static com.lamukhin.AntispamBot.util.ResponseMessage.HELLO;
 
 @Component
-@CommandNames("/ping_bot")
-public class StartCommand {
+@CommandNames(value = PingBotCommand.NAME, type = TypeCommand.MESSAGE)
+public class PingBotCommand {
 
-    private final Logger log = LoggerFactory.getLogger(StartCommand.class);
-    private long helloTime = System.currentTimeMillis();
+    public static final String NAME = "/ping_bot";
+    private final Logger log = LoggerFactory.getLogger(PingBotCommand.class);
+    private long helloTime = 0l;
 
     @CommandFirst
     public void greeting(TelegramLongPollingEngine engine,

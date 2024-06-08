@@ -66,7 +66,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             if (isSpam(coefOfAllMessage, wordsOfMessage.length)) {
 
                 //TODO: необходимо доработать Вовину либо, потому что без этого работа с колбэками - пытка.
-                String response = "Подозреваю, это спам. \"Вхождение\" сообщения в словарь банвордов - "
+                String response = "Подозреваю, это спам. \"Вхождение\" сообщения в словарь банвордов более "
                         + (int) (coefOfAllMessage * 100) + " %.";
 
                 MessageOperations.replyToMessage(
@@ -101,34 +101,9 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
         return false;
     }
 
-
     @PreDestroy
     private void destroyExecutorService() {
         executorService.shutdown();
     }
 
-
-//                final CallbackDataSender[][] yesNoButtons = {{
-//                        new CallbackDataSender("Yes", new CallbackData("judgement", "y " + update.getMessage().getFrom().getId())),
-//                        new CallbackDataSender("No", new CallbackData("judgement", "n "))
-//                }};
-//                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-//                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-//                List<InlineKeyboardButton> row = new ArrayList<>();
-//                InlineKeyboardButton button = new InlineKeyboardButton();
-//                button.setText("Да");
-//                button.setCallbackData("{\"command\":\"judgement\", \"data\":\"y "+ update.getMessage().getFrom().getId() +"\"}");
-//                row.add(button);
-//                button = new InlineKeyboardButton();
-//                button.setText("Нет");
-//                button.setCallbackData("{\"command\":\"judgement\", \"data\":\"n "+ update.getMessage().getFrom().getId() +"\"}");
-//                row.add(button);
-//                rowsInline.add(row);
-//                inlineKeyboardMarkup.setKeyboard(rowsInline);
-
-//                UserBotSession userBotSession = new UserBotSession(
-//                        "judgement",
-//                        TypeCommand.CALLBACK,
-//                        260113861l
-//                );
 }

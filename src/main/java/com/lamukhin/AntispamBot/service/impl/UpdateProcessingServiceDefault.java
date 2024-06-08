@@ -25,9 +25,7 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
     @Override
     public void processGroupChatUpdate(TelegramLongPollingEngine engine, Update update) {
         //TODO: внедрить jooq. пока не вышло, так как проблема с плагином. использую jpa
-        log.warn("обработка какого-то сообщения");
         if (update.getMessage().getChat().getType().equals("supergroup")) {
-            log.warn("обработка чатового сообщения");
             if (update.hasMessage()) {
                 long userTelegramId = update.getMessage().getFrom().getId();
                 Integer amount = messageCountService.amountOfMessages(userTelegramId);
