@@ -16,6 +16,7 @@ import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 import java.util.Arrays;
 
 import static com.lamukhin.AntispamBot.util.ResponseMessage.NEW_WORDS_SAVED;
+import static com.lamukhin.AntispamBot.util.ResponseMessage.SEND_WORDS_TO_SAVE;
 
 @Component
 @CommandNames(value = SaveNewBanwordsCommand.NAME, type = TypeCommand.MESSAGE)
@@ -33,31 +34,35 @@ public class SaveNewBanwordsCommand {
     @CommandFirst
     public void prepareToSave(TelegramLongPollingEngine engine,
                       @ParamName("chatId") Long chatId){
-        MessageOperations.sendNewMessage(
-                chatId,
-                "Отправьте сообщение, которое сохранится в словарь",
-                engine
-        );
+        if(chatId == 260113861L) {
+            MessageOperations.sendNewMessage(
+                    chatId,
+                    SEND_WORDS_TO_SAVE,
+                    engine
+            );
+        }
     }
 
     @CommandOther
     public void saveNewBanwords(TelegramLongPollingEngine engine,
                                 @ParamName("chatId") Long chatId,
                                 CommandContext context){
-        String newMessage = context.getUpdate().getMessage().getText();
-        String[] words = textService.invokeWordsFromRawMessage(newMessage);
-        textService.saveMessageIntoDictionary(words);
-        log.warn("New banwords has been added into the dictionary.");
-        String newBanwordsSavedResponse = String.format(
-                NEW_WORDS_SAVED,
-                toBeautifulString(words),
-                textService.getCachedDictionary().size()
-        );
-        MessageOperations.sendNewMessage(
-                chatId,
-                newBanwordsSavedResponse,
-                engine
-        );
+        if(chatId == 260113861L) {
+            String newMessage = context.getUpdate().getMessage().getText();
+            String[] words = textService.invokeWordsFromRawMessage(newMessage);
+            textService.saveMessageIntoDictionary(words);
+            log.warn("New banwords has been added into the dictionary.");
+            String newBanwordsSavedResponse = String.format(
+                    NEW_WORDS_SAVED,
+                    toBeautifulString(words),
+                    textService.getCachedDictionary().size()
+            );
+            MessageOperations.sendNewMessage(
+                    chatId,
+                    newBanwordsSavedResponse,
+                    engine
+            );
+        }
     }
 
     private String toBeautifulString(String[] words) {

@@ -11,5 +11,6 @@ public class ResponseMessage {
 
     public static final String SPAM_FOUND = "Скорее всего, это спам. \"Вхождение\" сообщения в словарь банвордов более %d %%.";
     public static final String MAYBE_SPAM = "Подозреваю, это спам.\n @ytrewq112233, проверь и пингани админа.";
-    public static final String NEW_WORDS_SAVED = "Сохранил новые слова:\n %s\nСлов в словаре: %d";
+    public static final String NEW_WORDS_SAVED = "Сохранил новые слова:\n%s\nСлов в словаре: %d";
+    public static final String SEND_WORDS_TO_SAVE = "Отправьте сообщение, которое сохранится в словарь";
 }
