@@ -19,12 +19,16 @@ public class CustomUpdateListener implements HandlerBotUpdate {
     private final Logger log = LoggerFactory.getLogger(CustomUpdateListener.class);
     private final UpdateProcessingService updateProcessingService;
 
+    private boolean paused = false;
+
     @Override
     public void update(TelegramLongPollingEngine engine, Update update) {
-        try {
-            updateProcessingService.processGroupChatUpdate(engine, update);
-        } catch (Exception ex) {
-            log.error("Error during processing update: {}", ex.getMessage());
+        if(!paused) {
+            try {
+                updateProcessingService.processGroupChatUpdate(engine, update);
+            } catch (Exception ex) {
+                log.error("Error during processing update: {}", ex.getMessage());
+            }
         }
     }
 
@@ -36,5 +40,13 @@ public class CustomUpdateListener implements HandlerBotUpdate {
 
     public CustomUpdateListener(UpdateProcessingService updateProcessingService) {
         this.updateProcessingService = updateProcessingService;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
+    public boolean isPaused() {
+        return paused;
     }
 }

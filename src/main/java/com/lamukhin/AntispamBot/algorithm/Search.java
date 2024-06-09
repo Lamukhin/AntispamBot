@@ -1,4 +1,4 @@
-package com.lamukhin.AntispamBot.verification;
+package com.lamukhin.AntispamBot.algorithm;
 
 import com.lamukhin.AntispamBot.db.entity.DictionaryEntity;
 import org.slf4j.Logger;
@@ -18,12 +18,12 @@ public class Search implements Callable<Integer> {
     private final String currentWord;
     private final Map<String, DictionaryEntity> wordDictionary;
 
-    @Value("${coefficients.of_current_word}")
-    private double forCurrentWord;
+    private final SearchSettings searchSettings;
 
-    public Search(String currentWord, Map<String, DictionaryEntity> dictionary) {
+    public Search(String currentWord, Map<String, DictionaryEntity> dictionary, SearchSettings searchSettings) {
         this.currentWord = currentWord;
         this.wordDictionary = dictionary;
+        this.searchSettings = searchSettings;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class Search implements Callable<Integer> {
                     double coefOfCurrentWord = twoWordsCrossesCoef(currentWord, wordInDictionary);
                     log.warn("Coefficient of the current words: {} : \"{}\" and \"{}\"", coefOfCurrentWord, currentWord, wordInDictionary);
 
-                    if (coefOfCurrentWord > forCurrentWord) {
+                    if (coefOfCurrentWord > searchSettings.getCoefForCurrentWord()) {
                         //if a found word EXISTS in our dictionary, we return its value.
                         // otherwise we return just 1, which means that found similar word
                         return coefOfCurrentWord == 1.0 ? wordDictionary.get(wordInDictionary).getValue() : 1;

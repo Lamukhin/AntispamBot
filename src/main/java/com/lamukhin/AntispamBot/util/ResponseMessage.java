@@ -13,4 +13,10 @@ public class ResponseMessage {
     public static final String MAYBE_SPAM = "Подозреваю, это спам.\n @ytrewq112233, проверь и пингани админа.";
     public static final String NEW_WORDS_SAVED = "Сохранил новые слова:\n%s\nСлов в словаре: %d";
     public static final String SEND_WORDS_TO_SAVE = "Отправьте сообщение, которое сохранится в словарь";
+    public static final String CURRENT_SETTINGS = "Настройки поиска:\n"
+            +"Кэф вхождения в словарь для короткого сообщения (%d - %d слов): %s\n"
+            +"Кэф вхождения в словарь для среднего сообщения (%d - %d слов): %s\n"
+            +"Кэф вхождения в словарь для длинного сообщения (%d - %d слов): %s\n"
+            +"Коэффициент совпадения символов слова со словарём: %s\n"
+            +"Редактировать:";
 }

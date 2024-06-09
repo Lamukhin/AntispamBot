@@ -1,10 +1,11 @@
 package com.lamukhin.AntispamBot.service.impl;
 
+import com.lamukhin.AntispamBot.algorithm.SearchSettings;
 import com.lamukhin.AntispamBot.service.interfaces.MetadataService;
 import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
 import com.lamukhin.AntispamBot.service.interfaces.TextService;
 import com.lamukhin.AntispamBot.util.MessageOperations;
-import com.lamukhin.AntispamBot.verification.Search;
+import com.lamukhin.AntispamBot.algorithm.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,13 +26,8 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
     private final Logger log = LoggerFactory.getLogger(SpamCheckingServiceDefault.class);
     private final TextService textService;
     private final MetadataService metadataService;
+    private final SearchSettings searchSettings;
 
-    @Value("${coefficients.for_4_to_6_length}")
-    private double for4To6Length;
-    @Value("${coefficients.for_7_to_20_length}")
-    private double for7To20Length;
-    @Value("${coefficients.for_more_21_length}")
-    private double forMoreThan21Length;
     private final ExecutorService executorService =
             Executors.newFixedThreadPool(10, r -> {
                 Thread thread = new Thread(r);
@@ -39,9 +35,10 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                 return thread;
             });
 
-    public SpamCheckingServiceDefault(TextService textService, MetadataService metadataService) {
+    public SpamCheckingServiceDefault(TextService textService, MetadataService metadataService, SearchSettings searchSettings) {
         this.textService = textService;
         this.metadataService = metadataService;
+        this.searchSettings = searchSettings;
     }
 
 
@@ -53,7 +50,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
 
             List<Callable<Integer>> tasks = new ArrayList<>();
             for (String word : wordsOfMessage) {
-                Search search = new Search(word, textService.getCachedDictionary());
+                Search search = new Search(word, textService.getCachedDictionary(), searchSettings);
                 tasks.add(search);
             }
 
@@ -107,14 +104,14 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
 
     // yes, im bad at math
     private boolean isSpam(double coefOfAllMessage, int amountOfWords) {
-        if ((amountOfWords >= 4) && (amountOfWords <= 6)) {
-            return coefOfAllMessage >= for4To6Length;
+        if (searchSettings.getSegmentForShort().isInSegment(amountOfWords)) {
+            return coefOfAllMessage >= searchSettings.getCoefForShortMessage();
         }
-        if ((amountOfWords >= 7) && (amountOfWords <= 20)) {
-            return coefOfAllMessage >= for7To20Length;
+        if (searchSettings.getSegmentForMiddle().isInSegment(amountOfWords)) {
+            return coefOfAllMessage >= searchSettings.getCoefForMiddleMessage();
         }
-        if (amountOfWords >= 21) {
-            return coefOfAllMessage >= forMoreThan21Length;
+        if (searchSettings.getSegmentForLong().isInSegment(amountOfWords)) {
+            return coefOfAllMessage >= searchSettings.getCoefForLongMessage();
         }
         return false;
     }
