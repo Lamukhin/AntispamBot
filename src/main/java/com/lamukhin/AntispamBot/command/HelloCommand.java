@@ -1,7 +1,5 @@
 package com.lamukhin.AntispamBot.command;
 
-import com.lamukhin.AntispamBot.listener.CustomUpdateListener;
-import com.lamukhin.AntispamBot.role.Admins;
 import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
@@ -16,8 +14,6 @@ import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.lamukhin.AntispamBot.util.ResponseMessage.HELLO;
 
 @Component
 @CommandNames(value = HelloCommand.NAME, type = TypeCommand.MESSAGE)

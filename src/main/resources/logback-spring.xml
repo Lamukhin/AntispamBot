@@ -6,7 +6,6 @@
 
     <!-- remove flood from logs -->
     <logger name="ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine" level="ERROR"/>
-
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
     </root>

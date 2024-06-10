@@ -23,6 +23,7 @@ public class CustomUpdateListener implements HandlerBotUpdate {
 
     @Override
     public void update(TelegramLongPollingEngine engine, Update update) {
+        log.warn("Processing update with a custom listener!");
         if(!paused) {
             try {
                 updateProcessingService.processGroupChatUpdate(engine, update);

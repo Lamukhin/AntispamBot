@@ -66,7 +66,6 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             double coefOfAllMessage = (double) totalMessageScore / wordsOfMessage.length;
 
             if (isSpam(coefOfAllMessage, wordsOfMessage.length)) {
-
                 //TODO: необходимо доработать Вовину либу, потому что без этого работа с колбэками - пытка.
                 String spamFoundResponse = String.format(
                         SPAM_FOUND,
@@ -92,7 +91,6 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                 textService.saveMessageIntoDictionary(wordsOfMessage);
 
             } else if(coefOfAllMessage >= 0.4) {
-
                 MessageOperations.replyToMessage(
                         update.getMessage().getChatId(),
                         MAYBE_SPAM,

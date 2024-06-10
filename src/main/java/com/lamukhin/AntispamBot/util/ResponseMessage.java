@@ -1,7 +1,8 @@
 package com.lamukhin.AntispamBot.util;
 
 public class ResponseMessage {
-    public static final String HELLO = "Привет! Я бот-защитник от криптоспама.\n"
+    public static final String BOT_STATUS = "Привет! Я бот-защитник от криптоспама.\n"
+            + "Статус: %s\n\n"
             + "Удалено сообщений: %s\n"
             + "Забанено спамеров: %s\n"
             + "Дата запуска в работу: %s\n"
