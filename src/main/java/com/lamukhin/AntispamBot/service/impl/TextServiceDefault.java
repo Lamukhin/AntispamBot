@@ -19,6 +19,8 @@ import java.util.Map;
 public class TextServiceDefault implements TextService {
 
     private final Logger log = LoggerFactory.getLogger(TextServiceDefault.class);
+    //TODO: посмотреть, насколько тяжело будет оперативе. если не потянет,
+    // то надо брать из бд каждый раз
     private Map<String, DictionaryEntity> cachedDictionary = new HashMap<>();
     private final DictionaryRepo dictionaryRepo;
 
