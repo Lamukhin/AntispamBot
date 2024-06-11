@@ -40,7 +40,7 @@ public class SearchSettingsCommand {
                     CURRENT_SETTINGS,
                     searchSettings.getSegmentForShort().getStart(), searchSettings.getSegmentForShort().getEnd(), df.format(searchSettings.getCoefForShortMessage()),
                     searchSettings.getSegmentForMiddle().getStart(), searchSettings.getSegmentForMiddle().getEnd(), df.format(searchSettings.getCoefForMiddleMessage()),
-                    searchSettings.getSegmentForLong().getStart(), searchSettings.getSegmentForLong().getEnd(), df.format(searchSettings.getCoefForLongMessage()),
+                    searchSettings.getSegmentForLong().getStart(), df.format(searchSettings.getCoefForLongMessage()),
                     df.format(searchSettings.getCoefForCurrentWord())
             );
             MessageOperations.sendNewMessage(
