@@ -19,7 +19,8 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
     private final MessageCountService messageCountService;
     private final SpamCheckingService spamCheckingService;
 
-    /* важная пометка: тут обрабатываются сообщения только из групповых чатов.
+    /*
+        важная пометка: тут обрабатываются сообщения только из групповых чатов.
         личные сообщения обрабатываются либой wdeath
     */
     @Override

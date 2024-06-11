@@ -2,6 +2,10 @@ package com.lamukhin.AntispamBot.algorithm;
 
 import org.springframework.stereotype.Component;
 
+/*
+    You can change the search settings using this component without restarting app.
+ */
+
 @Component
 public class SearchSettings {
 

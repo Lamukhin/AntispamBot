@@ -1,20 +1,21 @@
 package com.lamukhin.AntispamBot.service.impl;
 
+import com.lamukhin.AntispamBot.algorithm.Search;
 import com.lamukhin.AntispamBot.algorithm.SearchSettings;
 import com.lamukhin.AntispamBot.service.interfaces.MetadataService;
 import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
 import com.lamukhin.AntispamBot.service.interfaces.TextService;
 import com.lamukhin.AntispamBot.util.MessageOperations;
-import com.lamukhin.AntispamBot.algorithm.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.BanChatMember;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 
 import javax.annotation.PreDestroy;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
 import static com.lamukhin.AntispamBot.util.ResponseMessage.MAYBE_SPAM;
@@ -78,19 +79,25 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                         update.getMessage().getMessageId(),
                         engine);
 
-                MessageOperations.deleteMessage(
-                        update.getMessage().getChatId(),
-                        update.getMessage().getMessageId(),
-                        engine);
-                /*
-                тут архитектурный проёб, фиксить который я не собираюсь:
-                хоть и ооочень маловероятно, но deleteMessage может отъебнуть,
-                а значит апдейтить ничего не потребуется.
-                */
+                var send = BanChatMember.builder()
+                        .chatId(update.getMessage().getChatId())
+                        .userId(update.getMessage().getFrom().getId())
+                        .revokeMessages(true)
+                        .untilDate(0)
+                        .build();
+                engine.executeNotException(send);
+
+
+//                MessageOperations.deleteMessage(
+//                        update.getMessage().getChatId(),
+//                        update.getMessage().getMessageId(),
+//                        engine);
+
                 metadataService.updateDeletedMessages(engine.getBotUsername());
+                metadataService.updateBannedUsers(engine.getBotUsername());
                 textService.saveMessageIntoDictionary(wordsOfMessage);
 
-            } else if(coefOfAllMessage >= 0.4) {
+            } else if (coefOfAllMessage >= 0.4) {
                 MessageOperations.replyToMessage(
                         update.getMessage().getChatId(),
                         MAYBE_SPAM,
