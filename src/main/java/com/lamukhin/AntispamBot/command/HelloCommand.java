@@ -33,7 +33,7 @@ public class HelloCommand {
                          @ParamName("userId") Long userId,
                          @ParamName("chatId") Long chatId,
                          CommandContext context) {
-        if(chatId.equals(userId)) {
+        if (chatId.equals(userId)) {
             context.getEngine().executeNotException(
                     new SetMyCommands(
                             listOfCommands(userId),
@@ -54,14 +54,15 @@ public class HelloCommand {
     private List<BotCommand> listOfCommands(Long userId) {
         List<BotCommand> listOfCommands = new ArrayList<>();
         listOfCommands.add(new BotCommand(PingBotCommand.NAME, "Статус бота"));
-        if (admins.getSet().contains(String.valueOf(userId))) {
+
+        if ((admins.getSet().contains(String.valueOf(userId))) || (userId.equals(botOwnerId))) {
             listOfCommands.add(new BotCommand(StartBotCommand.NAME, "Приостановить работу бота"));
             listOfCommands.add(new BotCommand(StopBotCommand.NAME, "Возобновить работу бота"));
-            if (userId.equals(botOwnerId)) {
-                listOfCommands.add(new BotCommand(AddAdminCommand.NAME, "Добавить админа"));
-                listOfCommands.add(new BotCommand(SaveNewBanwordsCommand.NAME, "Пополнить словарь"));
-                listOfCommands.add(new BotCommand(SearchSettingsCommand.NAME, "Настройки поиска"));
-            }
+        }
+        if (userId.equals(botOwnerId)) {
+            listOfCommands.add(new BotCommand(AddAdminCommand.NAME, "Добавить админа"));
+            listOfCommands.add(new BotCommand(SaveNewBanwordsCommand.NAME, "Пополнить словарь"));
+            listOfCommands.add(new BotCommand(SearchSettingsCommand.NAME, "Настройки поиска"));
         }
         return listOfCommands;
     }

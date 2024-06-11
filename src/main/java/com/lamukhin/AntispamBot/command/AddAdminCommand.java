@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.objects.User;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
@@ -28,10 +29,14 @@ public class AddAdminCommand {
     @CommandFirst
     public void getCandidate(TelegramLongPollingEngine engine,
                              @ParamName("chatId") Long chatId) {
+        /*
+            Эта проверка сразу проверяет, личка ли это и пишет ли создатель.
+            Поскольку id личной переписки с ботом равен юзер айди в Телеграм Апи.
+         */
         if (chatId.equals(botOwnerId)) {
             MessageOperations.sendNewMessage(
                     chatId,
-                    "Отправьте сообщение от кандидата в админы",
+                    "Отправьте сообщение от кандидата в админы или его userId",
                     null,
                     engine
             );
@@ -42,8 +47,9 @@ public class AddAdminCommand {
     public void registerNewAdmin(TelegramLongPollingEngine engine,
                                  @ParamName("chatId") Long chatId,
                                  CommandContext context) {
-        try {
-            long candidateId = context.getUpdate().getMessage().getForwardFrom().getId();
+        User forwardedUser = context.getUpdate().getMessage().getForwardFrom();
+        if (forwardedUser != null){
+            long candidateId = forwardedUser.getId();
             admins.getSet().add(String.valueOf(candidateId));
             MessageOperations.sendNewMessage(
                     chatId,
@@ -51,10 +57,12 @@ public class AddAdminCommand {
                     null,
                     engine
             );
-        } catch (Exception ex) {
+        } else {
+            String receivedCandidateId = context.getUpdate().getMessage().getText();
+            admins.getSet().add(receivedCandidateId);
             MessageOperations.sendNewMessage(
                     chatId,
-                    "Не удалось извлечь ID. Вероятно, он закрыт настройками приватности. ",
+                    "Получили TG ID " + receivedCandidateId + " юзера и сохранили нового админа.",
                     null,
                     engine
             );

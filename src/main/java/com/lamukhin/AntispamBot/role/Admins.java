@@ -8,7 +8,7 @@ import java.util.Set;
 @Component
 public class Admins {
     private Set<String> admins = new HashSet<>() {{
-        add("260113861");
+        //add("260113861"); я разделил права создателя и админов
     }};
 
     public Set<String> getSet() {

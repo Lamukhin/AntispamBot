@@ -25,15 +25,15 @@ import static com.lamukhin.AntispamBot.util.ResponseMessage.SEND_WORDS_TO_SAVE;
 public class SaveNewBanwordsCommand {
 
     public static final String NAME = "/new_banwords";
-    @Value("${bot_owner_tg_id}")
-    private long botOwnerId;
     private final TextService textService;
     private final Logger log = LoggerFactory.getLogger(SaveNewBanwordsCommand.class);
+    @Value("${bot_owner_tg_id}")
+    private long botOwnerId;
 
     @CommandFirst
     public void prepareToSave(TelegramLongPollingEngine engine,
                               @ParamName("chatId") Long chatId) {
-        log.warn("chatId {}, botOwnerId {}", chatId,botOwnerId);
+
         if (chatId.equals(botOwnerId)) {
             MessageOperations.sendNewMessage(
                     chatId,

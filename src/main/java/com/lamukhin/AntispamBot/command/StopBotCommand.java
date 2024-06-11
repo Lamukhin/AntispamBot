@@ -3,6 +3,7 @@ package com.lamukhin.AntispamBot.command;
 import com.lamukhin.AntispamBot.listener.CustomUpdateListener;
 import com.lamukhin.AntispamBot.role.Admins;
 import com.lamukhin.AntispamBot.util.MessageOperations;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
@@ -16,8 +17,10 @@ import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 public class StopBotCommand {
 
     public static final String NAME = "/stop_bot";
-    private final Admins admins;
     private final CustomUpdateListener customUpdateListener;
+    private final Admins admins;
+    @Value("${bot_owner_tg_id}")
+    private long botOwnerId;
 
     @CommandFirst
     public void stopBot(TelegramLongPollingEngine engine,
@@ -25,7 +28,7 @@ public class StopBotCommand {
                         @ParamName("chatId") Long chatId,
                         @ParamName("userId") Long userId) {
 
-        if (admins.getSet().contains(String.valueOf(userId))) {
+        if ((admins.getSet().contains(String.valueOf(userId)))||(userId.equals(botOwnerId))) {
             if (!(customUpdateListener.getSwitcher().isPaused())) {
 
                 String switcherName = invokeFullNameFromUpdate(update);

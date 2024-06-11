@@ -30,7 +30,8 @@ public class BanCommand {
                             @ParamName("userId") Long userId,
                             @ParamName("chatId") Long chatId,
                             Update update) {
-        if (admins.getSet().contains(String.valueOf(userId))) {
+        if ((admins.getSet().contains(String.valueOf(userId)))
+                && (!(userId.equals(chatId)))) {
             long spammerId = update.getMessage().getReplyToMessage().getFrom().getId();
             if (!(admins.getSet().contains(String.valueOf(spammerId)))) {
                 String spamMessage = update.getMessage().getReplyToMessage().getText();
@@ -47,6 +48,7 @@ public class BanCommand {
                 metadataService.updateBannedUsers(engine.getBotUsername());
                 log.warn("Banned a spammer with ID {} manually", spammerId);
             }
+
         }
     }
 

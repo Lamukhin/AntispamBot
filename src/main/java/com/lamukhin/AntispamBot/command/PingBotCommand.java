@@ -38,13 +38,8 @@ public class PingBotCommand {
                          @ParamName("chatId") Long chatId,
                          @ParamName("userId") Long userId) {
 
-        MetadataEntity metadataEntity = metadataService.findMetadata(engine.getBotUsername());
-        if (metadataEntity == null) {
-            metadataEntity = metadataService.saveMetadata(
-                    new MetadataEntity(engine.getBotUsername())
-            );
-            log.warn("Saved new metadata for {}", engine.getBotUsername());
-        }
+        MetadataEntity metadataEntity = getThisBotMetadata(engine.getBotUsername());
+
         String botStatus = customUpdateListener.getSwitcher().isPaused() ? "НА ПАУЗЕ" : "РАБОТАЮ";
         String statusWord = customUpdateListener.getSwitcher().isPaused() ? "выключил" : "включил";
         String lastSwitcherName = customUpdateListener.getSwitcher().getLastSwitcherName();
@@ -56,6 +51,11 @@ public class PingBotCommand {
                 metadataEntity.getUsersBanned(),
                 metadataEntity.getDateStart().format(dateFormatter)
                 );
+
+        /*
+            Стараюсь придерживаться правила: в каждом публичном методе в "командах" оставлять
+            отправку сообщения, чтобы легко было понять, что получили и что тут же вернули.
+            */
         //an admin can call this command at any time
         if (admins.getSet().contains(String.valueOf(userId))) {
             MessageOperations.sendNewMessage(
@@ -73,6 +73,17 @@ public class PingBotCommand {
                     engine);
             lastHelloTime = System.currentTimeMillis();
         }
+    }
+
+    private MetadataEntity getThisBotMetadata(String botUsername) {
+        MetadataEntity metadataEntity = metadataService.findMetadata(botUsername);
+        if (metadataEntity == null) {
+            metadataEntity = metadataService.saveMetadata(
+                    new MetadataEntity(botUsername)
+            );
+            log.warn("Saved new metadata for {}", botUsername);
+        }
+        return metadataEntity;
     }
 
     public PingBotCommand(MetadataService metadataService, CustomUpdateListener customUpdateListener, Admins admins) {
