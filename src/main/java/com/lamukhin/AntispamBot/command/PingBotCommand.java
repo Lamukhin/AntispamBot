@@ -23,12 +23,12 @@ import static com.lamukhin.AntispamBot.util.ResponseMessage.BOT_STATUS;
 public class PingBotCommand {
 
     public static final String NAME = "/ping_bot";
-    private final Logger log = LoggerFactory.getLogger(PingBotCommand.class);
-    private long lastHelloTime = 0l;
+    private long lastHelloTime = 0L;
     private final MetadataService metadataService;
     private final CustomUpdateListener customUpdateListener;
     private final Admins admins;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private final Logger log = LoggerFactory.getLogger(PingBotCommand.class);
 
     @CommandFirst
     public void greeting(TelegramLongPollingEngine engine,

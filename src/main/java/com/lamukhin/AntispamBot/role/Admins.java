@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
-
+//TODO: сделать это нормально через бд
 @Component
 public class Admins {
     private Set<String> admins = new HashSet<>() {{

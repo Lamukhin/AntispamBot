@@ -13,9 +13,7 @@ import ru.wdeath.managerbot.lib.bot.callback.CallbackData;
 import ru.wdeath.managerbot.lib.bot.callback.CallbackDataSender;
 import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 import ru.wdeath.managerbot.lib.util.KeyboardUtil;
-
 import java.text.DecimalFormat;
-
 import static com.lamukhin.AntispamBot.util.ResponseMessage.CURRENT_SETTINGS;
 
 @Component

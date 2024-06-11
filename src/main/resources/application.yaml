@@ -34,3 +34,5 @@ program-agent:
     time-delay-send: 15000
     host: "https://wds-program-agent.ru/api/"
     myHost: "http://10.9.0.5:1016/api/"
+
+bot_owner_tg_id: 260113861

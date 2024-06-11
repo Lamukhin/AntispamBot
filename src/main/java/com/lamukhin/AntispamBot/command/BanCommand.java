@@ -16,20 +16,20 @@ import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 
 @Component
 @CommandNames(value = BanCommand.NAME, type = TypeCommand.MESSAGE)
-//TODO: доработать либу wdeath, чтобы была возможность работать с сессиями в группах
 public class BanCommand {
 
     public static final String NAME = "!spam";
-    private final Logger log = LoggerFactory.getLogger(BanCommand.class);
     private final TextService textService;
     private final MetadataService metadataService;
     private final Admins admins;
 
+    private final Logger log = LoggerFactory.getLogger(BanCommand.class);
+
     @CommandFirst
     public void banManually(TelegramLongPollingEngine engine,
-                      @ParamName("userId") Long userId,
-                      @ParamName("chatId") Long chatId,
-                      Update update) {
+                            @ParamName("userId") Long userId,
+                            @ParamName("chatId") Long chatId,
+                            Update update) {
         if (admins.getSet().contains(String.valueOf(userId))) {
             long spammerId = update.getMessage().getReplyToMessage().getFrom().getId();
             if (!(admins.getSet().contains(String.valueOf(spammerId)))) {
@@ -48,8 +48,8 @@ public class BanCommand {
                 log.warn("Banned a spammer with ID {} manually", spammerId);
             }
         }
-
     }
+
     public BanCommand(TextService textService, MetadataService metadataService, Admins admins) {
         this.textService = textService;
         this.metadataService = metadataService;

@@ -4,8 +4,8 @@ import com.lamukhin.AntispamBot.algorithm.SearchSettings;
 import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
@@ -17,25 +17,33 @@ import ru.wdeath.managerbot.lib.bot.session.UserBotSession;
 
 import java.util.Arrays;
 
+import static com.lamukhin.AntispamBot.util.ResponseMessage.*;
+
 @Component
 @CommandNames(value = EditSettingsCommand.NAME, type = TypeCommand.CALLBACK)
 public class EditSettingsCommand {
+
     public static final String NAME = "edit-settings";
-    private final Logger log = LoggerFactory.getLogger(EditSettingsCommand.class);
     private final SearchSettings searchSettings;
+
+    private final Logger log = LoggerFactory.getLogger(EditSettingsCommand.class);
+    @Value("${bot_owner_tg_id}")
+    private long botOwnerId;
 
     @CommandFirst
     public void showSettings(TelegramLongPollingEngine engine,
                              @ParamName("chatId") Long chatId,
+                             @ParamName("userId") Long userId,
                              CommandContext context,
                              UserBotSession userBotSession) {
-        if (chatId == 260113861L) {
+
+        if (userId.equals(botOwnerId)) {
             String data = (String) context.getData();
             switch (data) {
                 case "short" -> {
                     MessageOperations.sendNewMessage(
                             chatId,
-                            "Пришлите новые значения для коротких сообщений через пробел в формате 5 10 0.5",
+                            String.format(SEND_LENGTH_VALUES, "коротких"),
                             engine
                     );
                     userBotSession.setData("short");
@@ -43,7 +51,7 @@ public class EditSettingsCommand {
                 case "middle" -> {
                     MessageOperations.sendNewMessage(
                             chatId,
-                            "Пришлите новые значения для средних сообщений через пробел в формате 5 10 0.5",
+                            String.format(SEND_LENGTH_VALUES, "средних"),
                             engine
                     );
                     userBotSession.setData("middle");
@@ -51,7 +59,7 @@ public class EditSettingsCommand {
                 case "long" -> {
                     MessageOperations.sendNewMessage(
                             chatId,
-                            "Пришлите новые значения для длинных сообщений через пробел в формате 5 10 0.5",
+                            String.format(SEND_LENGTH_VALUES, "длинных"),
                             engine
                     );
                     userBotSession.setData("long");
@@ -59,7 +67,7 @@ public class EditSettingsCommand {
                 case "word" -> {
                     MessageOperations.sendNewMessage(
                             chatId,
-                            "Пришлите новое значение кэфа для одного слова в формате 0.5",
+                            SEND_WORD_COEF,
                             engine
                     );
                     userBotSession.setData("word");
@@ -68,16 +76,14 @@ public class EditSettingsCommand {
         }
     }
 
-    //TODO: пока в разработке
     @CommandOther
     public void changeData(
             TelegramLongPollingEngine engine,
             @ParamName("chatId") Long chatId,
-            Update update,
             UserBotSession userBotSession,
             CommandContext context) {
+
         String newMessage = context.getUpdate().getMessage().getText();
-        log.warn("текст месаги {}", newMessage);
         String[] values = newMessage.split(" ");
         Arrays.asList(values).forEach(System.out::println);
         switch ((String) userBotSession.getData()) {
@@ -87,7 +93,7 @@ public class EditSettingsCommand {
                 searchSettings.setCoefForShortMessage(Double.parseDouble(values[2]));
                 MessageOperations.sendNewMessage(
                         chatId,
-                        "Данные для коротких сообщений сохранены. /settings, чтобы убедиться",
+                        String.format(SAVED_LENGTH_VALUES, "коротких"),
                         engine
                 );
             }
@@ -97,7 +103,7 @@ public class EditSettingsCommand {
                 searchSettings.setCoefForMiddleMessage(Double.parseDouble(values[2]));
                 MessageOperations.sendNewMessage(
                         chatId,
-                        "Данные для средних сообщений сохранены. /settings, чтобы убедиться",
+                        String.format(SAVED_LENGTH_VALUES, "средних"),
                         engine
                 );
             }
@@ -107,7 +113,7 @@ public class EditSettingsCommand {
                 searchSettings.setCoefForLongMessage(Double.parseDouble(values[2]));
                 MessageOperations.sendNewMessage(
                         chatId,
-                        "Данные для длинных сообщений сохранены. /settings, чтобы убедиться",
+                        String.format(SAVED_LENGTH_VALUES, "длинных"),
                         engine
                 );
             }
@@ -115,7 +121,7 @@ public class EditSettingsCommand {
                 searchSettings.setCoefForCurrentWord(Double.parseDouble(values[0]));
                 MessageOperations.sendNewMessage(
                         chatId,
-                        "Кэф для каждого слова изменён. /settings, чтобы убедиться",
+                        SAVED_WORD_COEF,
                         engine
                 );
             }

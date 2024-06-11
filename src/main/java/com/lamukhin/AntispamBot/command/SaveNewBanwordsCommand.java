@@ -4,6 +4,7 @@ import com.lamukhin.AntispamBot.service.interfaces.TextService;
 import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
@@ -23,18 +24,15 @@ import static com.lamukhin.AntispamBot.util.ResponseMessage.SEND_WORDS_TO_SAVE;
 public class SaveNewBanwordsCommand {
 
     public static final String NAME = "/new_banwords";
-    private final Logger log = LoggerFactory.getLogger(SaveNewBanwordsCommand.class);
+    @Value("${bot_owner_tg_id}")
+    private long botOwnerId;
     private final TextService textService;
-
-    public SaveNewBanwordsCommand(TextService textService) {
-        this.textService = textService;
-    }
-
+    private final Logger log = LoggerFactory.getLogger(SaveNewBanwordsCommand.class);
 
     @CommandFirst
     public void prepareToSave(TelegramLongPollingEngine engine,
-                      @ParamName("chatId") Long chatId){
-        if(chatId == 260113861L) {
+                              @ParamName("chatId") Long chatId) {
+        if (chatId.equals(botOwnerId)) {
             MessageOperations.sendNewMessage(
                     chatId,
                     SEND_WORDS_TO_SAVE,
@@ -46,23 +44,21 @@ public class SaveNewBanwordsCommand {
     @CommandOther
     public void saveNewBanwords(TelegramLongPollingEngine engine,
                                 @ParamName("chatId") Long chatId,
-                                CommandContext context){
-        if(chatId == 260113861L) {
-            String newMessage = context.getUpdate().getMessage().getText();
-            String[] words = textService.invokeWordsFromRawMessage(newMessage);
-            textService.saveMessageIntoDictionary(words);
-            log.warn("New banwords has been added into the dictionary.");
-            String newBanwordsSavedResponse = String.format(
-                    NEW_WORDS_SAVED,
-                    toBeautifulString(words),
-                    textService.getCachedDictionary().size()
-            );
-            MessageOperations.sendNewMessage(
-                    chatId,
-                    newBanwordsSavedResponse,
-                    engine
-            );
-        }
+                                CommandContext context) {
+        String newMessage = context.getUpdate().getMessage().getText();
+        String[] words = textService.invokeWordsFromRawMessage(newMessage);
+        textService.saveMessageIntoDictionary(words);
+        log.warn("New banwords has been added into the dictionary.");
+        String newBanwordsSavedResponse = String.format(
+                NEW_WORDS_SAVED,
+                toBeautifulString(words),
+                textService.getCachedDictionary().size()
+        );
+        MessageOperations.sendNewMessage(
+                chatId,
+                newBanwordsSavedResponse,
+                engine
+        );
     }
 
     private String toBeautifulString(String[] words) {
@@ -72,5 +68,9 @@ public class SaveNewBanwordsCommand {
             stringBuilder.append(", ");
         });
         return stringBuilder.toString();
+    }
+
+    public SaveNewBanwordsCommand(TextService textService) {
+        this.textService = textService;
     }
 }

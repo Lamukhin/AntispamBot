@@ -22,6 +22,7 @@ public class StartBotCommand {
     public void startBot(TelegramLongPollingEngine engine,
                          @ParamName("chatId") Long chatId,
                          @ParamName("userId") Long userId){
+
          if (admins.getSet().contains(String.valueOf(userId))){
              customUpdateListener.setPaused(false);
              MessageOperations.sendNewMessage(

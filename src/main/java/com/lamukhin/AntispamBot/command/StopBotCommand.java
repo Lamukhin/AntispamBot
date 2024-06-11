@@ -13,6 +13,7 @@ import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 @Component
 @CommandNames(value = StopBotCommand.NAME, type = TypeCommand.MESSAGE)
 public class StopBotCommand {
+
     public static final String NAME = "/stop_bot";
     private final Admins admins;
     private final CustomUpdateListener customUpdateListener;
@@ -21,6 +22,7 @@ public class StopBotCommand {
     public void stopBot(TelegramLongPollingEngine engine,
                          @ParamName("chatId") Long chatId,
                          @ParamName("userId") Long userId){
+
          if (admins.getSet().contains(String.valueOf(userId))){
              customUpdateListener.setPaused(true);
              MessageOperations.sendNewMessage(
