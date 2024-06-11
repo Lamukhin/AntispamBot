@@ -33,21 +33,22 @@ public class HelloCommand {
                          @ParamName("userId") Long userId,
                          @ParamName("chatId") Long chatId,
                          CommandContext context) {
-        context.getEngine().executeNotException(
-                new SetMyCommands(
-                        listOfCommands(userId),
-                        new BotCommandScopeDefault(),
-                        null
-                )
-        );
-        String userFirstName = context.getUpdate().getMessage().getFrom().getFirstName();
-        MessageOperations.sendNewMessage(
-                chatId,
-                String.format(HELLO, userFirstName),
-                null,
-                engine
-        );
-
+        if(chatId.equals(userId)) {
+            context.getEngine().executeNotException(
+                    new SetMyCommands(
+                            listOfCommands(userId),
+                            new BotCommandScopeDefault(),
+                            null
+                    )
+            );
+            String userFirstName = context.getUpdate().getMessage().getFrom().getFirstName();
+            MessageOperations.sendNewMessage(
+                    chatId,
+                    String.format(HELLO, userFirstName),
+                    null,
+                    engine
+            );
+        }
     }
 
     private List<BotCommand> listOfCommands(Long userId) {

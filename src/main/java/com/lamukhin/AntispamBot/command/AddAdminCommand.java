@@ -20,15 +20,15 @@ public class AddAdminCommand {
 
     public static final String NAME = "/add_admin";
     private final Admins admins;
+    private final Logger log = LoggerFactory.getLogger(SaveNewBanwordsCommand.class);
 
     @Value("${bot_owner_tg_id}")
     private long botOwnerId;
 
     @CommandFirst
     public void getCandidate(TelegramLongPollingEngine engine,
-                             @ParamName("userId") Long userId,
                              @ParamName("chatId") Long chatId) {
-        if (userId.equals(botOwnerId)) {
+        if (chatId.equals(botOwnerId)) {
             MessageOperations.sendNewMessage(
                     chatId,
                     "Отправьте сообщение от кандидата в админы",

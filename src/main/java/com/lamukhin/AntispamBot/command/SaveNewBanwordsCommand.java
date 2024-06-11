@@ -33,11 +33,12 @@ public class SaveNewBanwordsCommand {
     @CommandFirst
     public void prepareToSave(TelegramLongPollingEngine engine,
                               @ParamName("chatId") Long chatId) {
+        log.warn("chatId {}, botOwnerId {}", chatId,botOwnerId);
         if (chatId.equals(botOwnerId)) {
             MessageOperations.sendNewMessage(
                     chatId,
                     SEND_WORDS_TO_SAVE,
-                    ParseMode.MARKDOWN,
+                    null,
                     engine
             );
         }

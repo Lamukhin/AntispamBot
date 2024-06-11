@@ -30,7 +30,7 @@ public class PingBotCommand {
     private final CustomUpdateListener customUpdateListener;
     private final Admins admins;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    private final SimpleDateFormat timestampFormatter = new SimpleDateFormat("dd-MM-yyyy в HH:mm");
+    private final SimpleDateFormat timestampFormatter = new SimpleDateFormat("dd.MM.yyyy в HH:mm");
     private final Logger log = LoggerFactory.getLogger(PingBotCommand.class);
 
     @CommandFirst

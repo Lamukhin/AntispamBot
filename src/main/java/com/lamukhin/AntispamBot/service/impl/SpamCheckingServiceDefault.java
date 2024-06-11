@@ -16,6 +16,7 @@ import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 
 import javax.annotation.PreDestroy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -45,6 +46,10 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
         if ((update.hasMessage()) && (update.getMessage().hasText())) {
             int totalMessageScore = 0;
             String[] wordsOfMessage = textService.invokeWordsFromRawMessage(update.getMessage().getText());
+            //я хочу на будущее и предлоги/частицы себе сохранить, но в данном месте это ломает логику.
+            //поэтому для выведения кэфа я профильтрую без них, а сохраню в базу с ними
+            //TODO: исправить этот кринж (когда-нибудь)
+            String[] wordsOfMessageBEZ_PREDLOGOV = deleteShortWords(wordsOfMessage);
 
             List<Callable<Integer>> tasks = createSearchingTasks(
                     wordsOfMessage,
@@ -60,12 +65,9 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                 log.error("The message checking has failed: {}", ex.getMessage());
             }
 
-            //TODO: тут ошибка. wordsOfMessage.length содержит короткие слова,
-            // которые мы не обрабатываем в поисковике и которые не изменяют кэф итоговый.
-            // значениче будет занижено всегда!!!
             double coefOfAllMessage = (double) totalMessageScore / wordsOfMessage.length;
 
-            if (isSpam(coefOfAllMessage, wordsOfMessage.length)) {
+            if (isSpam(coefOfAllMessage, wordsOfMessageBEZ_PREDLOGOV.length)) {
                 //TODO: необходимо доработать Вовину либу, потому что без этого работа с колбэками - пытка.
                 String spamFoundResponse = String.format(
                         SPAM_FOUND,
@@ -104,6 +106,12 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                         engine);
             }
         }
+    }
+
+    private String[] deleteShortWords(String[] wordsOfMessage) {
+        return Arrays.stream(wordsOfMessage)
+                .filter(word -> (word.length() >= 3))
+                .toArray(String[]::new);
     }
 
     private List<Callable<Integer>> createSearchingTasks(String[] wordsOfMessage, Map<String, DictionaryEntity> cachedDictionary, SearchSettings searchSettings) {
