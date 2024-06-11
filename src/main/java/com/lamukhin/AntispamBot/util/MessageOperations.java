@@ -15,14 +15,15 @@ public class MessageOperations {
 
     private static final Logger log = LoggerFactory.getLogger(MessageOperations.class);
 
-    public static void sendNewMessage(Long chatId, String text, InlineKeyboardMarkup markup, TelegramLongPollingEngine engine) {
-        var send = SendMessage
-                .builder()
-                .chatId(chatId)
-                .text(text)
-                .replyMarkup(markup)
-                .parseMode(ParseMode.MARKDOWN)
-                .build();
+    //TODO: по необходимости внедрить везде parseMode и убрать builder
+    public static void sendNewMessage(Long chatId, String text, String parseMode, InlineKeyboardMarkup markup, TelegramLongPollingEngine engine) {
+        SendMessage send = new SendMessage();
+        send.setChatId(chatId);
+        send.setText(text);
+        send.setReplyMarkup(markup);
+        if (parseMode != null) {
+            send.setParseMode(parseMode);
+        }
         try {
             engine.execute(send);
         } catch (TelegramApiException e) {
@@ -30,13 +31,13 @@ public class MessageOperations {
         }
     }
 
-    public static void sendNewMessage(Long chatId, String text, TelegramLongPollingEngine engine) {
-        var send = SendMessage
-                .builder()
-                .chatId(chatId)
-                .text(text)
-                .parseMode(ParseMode.MARKDOWN)
-                .build();
+    public static void sendNewMessage(Long chatId, String text, String parseMode, TelegramLongPollingEngine engine) {
+        SendMessage send = new SendMessage();
+        send.setChatId(chatId);
+        send.setText(text);
+        if (parseMode != null) {
+            send.setParseMode(parseMode);
+        }
         try {
             engine.execute(send);
         } catch (TelegramApiException e) {

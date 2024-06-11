@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
@@ -36,6 +37,7 @@ public class SaveNewBanwordsCommand {
             MessageOperations.sendNewMessage(
                     chatId,
                     SEND_WORDS_TO_SAVE,
+                    ParseMode.MARKDOWN,
                     engine
             );
         }
@@ -57,6 +59,7 @@ public class SaveNewBanwordsCommand {
         MessageOperations.sendNewMessage(
                 chatId,
                 newBanwordsSavedResponse,
+                ParseMode.MARKDOWN,
                 engine
         );
     }

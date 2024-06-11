@@ -1,5 +1,6 @@
 package com.lamukhin.AntispamBot.command;
 
+import com.lamukhin.AntispamBot.role.Admins;
 import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,7 @@ import static com.lamukhin.AntispamBot.util.ResponseMessage.HELLO;
 public class HelloCommand {
 
     public static final String NAME = "/start";
-
+    private final Admins admins;
     @Value("${bot_owner_tg_id}")
     private long botOwnerId;
 
@@ -43,6 +44,7 @@ public class HelloCommand {
         MessageOperations.sendNewMessage(
                 chatId,
                 String.format(HELLO, userFirstName),
+                null,
                 engine
         );
 
@@ -50,15 +52,20 @@ public class HelloCommand {
 
     private List<BotCommand> listOfCommands(Long userId) {
         List<BotCommand> listOfCommands = new ArrayList<>();
-        listOfCommands.add(new BotCommand(StartBotCommand.NAME, "Приостановить работу бота"));
-        listOfCommands.add(new BotCommand(StopBotCommand.NAME, "Возобновить работу бота"));
         listOfCommands.add(new BotCommand(PingBotCommand.NAME, "Статус бота"));
-        //The owner can control the search settings and the list of group admins
-        if (userId.equals(botOwnerId)) {
-            listOfCommands.add(new BotCommand(AddAdminCommand.NAME, "Добавить админа"));
-            listOfCommands.add(new BotCommand(SaveNewBanwordsCommand.NAME, "Пополнить словарь"));
-            listOfCommands.add(new BotCommand(SearchSettingsCommand.NAME, "Настройки поиска"));
+        if (admins.getSet().contains(String.valueOf(userId))) {
+            listOfCommands.add(new BotCommand(StartBotCommand.NAME, "Приостановить работу бота"));
+            listOfCommands.add(new BotCommand(StopBotCommand.NAME, "Возобновить работу бота"));
+            if (userId.equals(botOwnerId)) {
+                listOfCommands.add(new BotCommand(AddAdminCommand.NAME, "Добавить админа"));
+                listOfCommands.add(new BotCommand(SaveNewBanwordsCommand.NAME, "Пополнить словарь"));
+                listOfCommands.add(new BotCommand(SearchSettingsCommand.NAME, "Настройки поиска"));
+            }
         }
         return listOfCommands;
+    }
+
+    public HelloCommand(Admins admins) {
+        this.admins = admins;
     }
 }

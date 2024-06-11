@@ -8,15 +8,17 @@ import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
 import ru.wdeath.managerbot.lib.bot.annotations.ParamName;
 import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 
-import static com.lamukhin.AntispamBot.util.ResponseMessage.BOT_STATUS;
+import static com.lamukhin.AntispamBot.util.ResponseMessage.BOT_FULL_INFO;
 
 @Component
 @CommandNames(value = PingBotCommand.NAME, type = TypeCommand.MESSAGE)
@@ -27,7 +29,8 @@ public class PingBotCommand {
     private final MetadataService metadataService;
     private final CustomUpdateListener customUpdateListener;
     private final Admins admins;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private final SimpleDateFormat timestampFormatter = new SimpleDateFormat("dd-MM-yyyy в HH:mm");
     private final Logger log = LoggerFactory.getLogger(PingBotCommand.class);
 
     @CommandFirst
@@ -42,19 +45,23 @@ public class PingBotCommand {
             );
             log.warn("Saved new metadata for {}", engine.getBotUsername());
         }
-        String botStatus = customUpdateListener.isPaused() ? "НА ПАУЗЕ" : "РАБОТАЮ";
+        String botStatus = customUpdateListener.getSwitcher().isPaused() ? "НА ПАУЗЕ" : "РАБОТАЮ";
+        String statusWord = customUpdateListener.getSwitcher().isPaused() ? "выключил" : "включил";
+        String lastSwitcherName = customUpdateListener.getSwitcher().getLastSwitcherName();
+        String lastSwitchTimestamp = timestampFormatter.format(customUpdateListener.getSwitcher().getLastSwitchTimestamp());
         String response = String.format(
-                BOT_STATUS,
-                botStatus,
+                BOT_FULL_INFO,
+                botStatus, statusWord, lastSwitcherName, lastSwitchTimestamp,
                 metadataEntity.getMessagesDeleted(),
                 metadataEntity.getUsersBanned(),
-                metadataEntity.getDateStart().format(formatter)
+                metadataEntity.getDateStart().format(dateFormatter)
                 );
         //an admin can call this command at any time
         if (admins.getSet().contains(String.valueOf(userId))) {
             MessageOperations.sendNewMessage(
                     chatId,
                     response,
+                    ParseMode.MARKDOWN,
                     engine);
         } else
         //but a default user don't have to flood
@@ -62,6 +69,7 @@ public class PingBotCommand {
             MessageOperations.sendNewMessage(
                     chatId,
                     response,
+                    ParseMode.MARKDOWN,
                     engine);
             lastHelloTime = System.currentTimeMillis();
         }

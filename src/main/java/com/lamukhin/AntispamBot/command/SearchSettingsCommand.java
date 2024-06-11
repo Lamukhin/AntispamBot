@@ -5,6 +5,7 @@ import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
@@ -44,6 +45,7 @@ public class SearchSettingsCommand {
             MessageOperations.sendNewMessage(
                     chatId,
                     response,
+                    ParseMode.MARKDOWN,
                     KeyboardUtil.inline(buttons),
                     engine
             );

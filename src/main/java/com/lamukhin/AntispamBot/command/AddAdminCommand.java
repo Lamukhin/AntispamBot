@@ -32,6 +32,7 @@ public class AddAdminCommand {
             MessageOperations.sendNewMessage(
                     chatId,
                     "Отправьте сообщение от кандидата в админы",
+                    null,
                     engine
             );
         }
@@ -47,12 +48,14 @@ public class AddAdminCommand {
             MessageOperations.sendNewMessage(
                     chatId,
                     "Получили TG ID " + candidateId + " юзера и сохранили нового админа.",
+                    null,
                     engine
             );
         } catch (Exception ex) {
             MessageOperations.sendNewMessage(
                     chatId,
                     "Не удалось извлечь ID. Вероятно, он закрыт настройками приватности. ",
+                    null,
                     engine
             );
         }

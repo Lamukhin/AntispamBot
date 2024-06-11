@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
@@ -44,6 +45,7 @@ public class EditSettingsCommand {
                     MessageOperations.sendNewMessage(
                             chatId,
                             String.format(SEND_LENGTH_VALUES, "коротких"),
+                            ParseMode.MARKDOWN,
                             engine
                     );
                     userBotSession.setData("short");
@@ -52,6 +54,7 @@ public class EditSettingsCommand {
                     MessageOperations.sendNewMessage(
                             chatId,
                             String.format(SEND_LENGTH_VALUES, "средних"),
+                            ParseMode.MARKDOWN,
                             engine
                     );
                     userBotSession.setData("middle");
@@ -60,6 +63,7 @@ public class EditSettingsCommand {
                     MessageOperations.sendNewMessage(
                             chatId,
                             String.format(SEND_LENGTH_VALUES, "длинных"),
+                            ParseMode.MARKDOWN,
                             engine
                     );
                     userBotSession.setData("long");
@@ -68,6 +72,7 @@ public class EditSettingsCommand {
                     MessageOperations.sendNewMessage(
                             chatId,
                             SEND_WORD_COEF,
+                            ParseMode.MARKDOWN,
                             engine
                     );
                     userBotSession.setData("word");
@@ -94,6 +99,7 @@ public class EditSettingsCommand {
                 MessageOperations.sendNewMessage(
                         chatId,
                         String.format(SAVED_LENGTH_VALUES, "коротких"),
+                        ParseMode.MARKDOWN,
                         engine
                 );
             }
@@ -104,6 +110,7 @@ public class EditSettingsCommand {
                 MessageOperations.sendNewMessage(
                         chatId,
                         String.format(SAVED_LENGTH_VALUES, "средних"),
+                        ParseMode.MARKDOWN,
                         engine
                 );
             }
@@ -114,6 +121,7 @@ public class EditSettingsCommand {
                 MessageOperations.sendNewMessage(
                         chatId,
                         String.format(SAVED_LENGTH_VALUES, "длинных"),
+                        ParseMode.MARKDOWN,
                         engine
                 );
             }
@@ -122,6 +130,7 @@ public class EditSettingsCommand {
                 MessageOperations.sendNewMessage(
                         chatId,
                         SAVED_WORD_COEF,
+                        ParseMode.MARKDOWN,
                         engine
                 );
             }
