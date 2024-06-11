@@ -12,6 +12,7 @@ import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import java.util.*;
 
 //@Service
+//могила старых наработок
 @Deprecated
 public class SpamCheckingServiceSecond implements SpamCheckingService {
 

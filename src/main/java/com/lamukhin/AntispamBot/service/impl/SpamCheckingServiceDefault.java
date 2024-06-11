@@ -2,6 +2,7 @@ package com.lamukhin.AntispamBot.service.impl;
 
 import com.lamukhin.AntispamBot.algorithm.Search;
 import com.lamukhin.AntispamBot.algorithm.SearchSettings;
+import com.lamukhin.AntispamBot.db.entity.DictionaryEntity;
 import com.lamukhin.AntispamBot.service.interfaces.MetadataService;
 import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
 import com.lamukhin.AntispamBot.service.interfaces.TextService;
@@ -16,6 +17,7 @@ import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import javax.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 import static com.lamukhin.AntispamBot.util.ResponseMessage.MAYBE_SPAM;
@@ -24,11 +26,9 @@ import static com.lamukhin.AntispamBot.util.ResponseMessage.SPAM_FOUND;
 @Service
 public class SpamCheckingServiceDefault implements SpamCheckingService {
 
-    private final Logger log = LoggerFactory.getLogger(SpamCheckingServiceDefault.class);
     private final TextService textService;
     private final MetadataService metadataService;
     private final SearchSettings searchSettings;
-
     private final ExecutorService executorService =
             Executors.newFixedThreadPool(10, r -> {
                 Thread thread = new Thread(r);
@@ -36,24 +36,20 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                 return thread;
             });
 
-    public SpamCheckingServiceDefault(TextService textService, MetadataService metadataService, SearchSettings searchSettings) {
-        this.textService = textService;
-        this.metadataService = metadataService;
-        this.searchSettings = searchSettings;
-    }
+    private final Logger log = LoggerFactory.getLogger(SpamCheckingServiceDefault.class);
 
 
     @Override
     public void checkUpdate(Update update, TelegramLongPollingEngine engine) {
+        //TODO: не уверен, что тут не будет npe
         if ((update.hasMessage()) && (update.getMessage().hasText())) {
             int totalMessageScore = 0;
             String[] wordsOfMessage = textService.invokeWordsFromRawMessage(update.getMessage().getText());
 
-            List<Callable<Integer>> tasks = new ArrayList<>();
-            for (String word : wordsOfMessage) {
-                Search search = new Search(word, textService.getCachedDictionary(), searchSettings);
-                tasks.add(search);
-            }
+            List<Callable<Integer>> tasks = createSearchingTasks(
+                    wordsOfMessage,
+                    textService.getCachedDictionary(),
+                    searchSettings);
 
             try {
                 List<Future<Integer>> futures = executorService.invokeAll(tasks);
@@ -64,6 +60,9 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                 log.error("The message checking has failed: {}", ex.getMessage());
             }
 
+            //TODO: тут ошибка. wordsOfMessage.length содержит короткие слова,
+            // которые мы не обрабатываем в поисковике и которые не изменяют кэф итоговый.
+            // значениче будет занижено всегда!!!
             double coefOfAllMessage = (double) totalMessageScore / wordsOfMessage.length;
 
             if (isSpam(coefOfAllMessage, wordsOfMessage.length)) {
@@ -107,6 +106,15 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
         }
     }
 
+    private List<Callable<Integer>> createSearchingTasks(String[] wordsOfMessage, Map<String, DictionaryEntity> cachedDictionary, SearchSettings searchSettings) {
+        List<Callable<Integer>> tasks = new ArrayList<>();
+        for (String word : wordsOfMessage) {
+            Search search = new Search(word, textService.getCachedDictionary(), searchSettings);
+            tasks.add(search);
+        }
+        return tasks;
+    }
+
     // yes, im bad at math
     private boolean isSpam(double coefOfAllMessage, int amountOfWords) {
         if (searchSettings.getSegmentForShort().isInSegment(amountOfWords)) {
@@ -126,4 +134,9 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
         executorService.shutdown();
     }
 
+    public SpamCheckingServiceDefault(TextService textService, MetadataService metadataService, SearchSettings searchSettings) {
+        this.textService = textService;
+        this.metadataService = metadataService;
+        this.searchSettings = searchSettings;
+    }
 }

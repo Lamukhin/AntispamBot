@@ -9,17 +9,16 @@ import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.interfaces.HandlerBotUpdate;
 
 /*
-    This is a root component for all application.
+    This is a root component of all application.
     Every group chat message processing starts here.
  */
 
 @Component
 public class CustomUpdateListener implements HandlerBotUpdate {
 
-    private final Logger log = LoggerFactory.getLogger(CustomUpdateListener.class);
     private final UpdateProcessingService updateProcessingService;
-
     private boolean paused = false;
+    private final Logger log = LoggerFactory.getLogger(CustomUpdateListener.class);
 
     @Override
     public void update(TelegramLongPollingEngine engine, Update update) {

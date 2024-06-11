@@ -2,7 +2,7 @@ package com.lamukhin.AntispamBot.service.interfaces;
 
 public interface MessageCountService {
 
-    Integer amountOfMessages(long idChatTelegram);
+    Long amountOfMessages(long idChatTelegram);
 
     void saveNewMember(long idChatTelegram);
 

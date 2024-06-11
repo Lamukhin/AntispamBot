@@ -17,9 +17,9 @@ import java.util.Map;
 @Service
 public class MessageCountServiceDefault implements MessageCountService {
 
-    private final Logger log = LoggerFactory.getLogger(MessageCountServiceDefault.class);
     private final MessageCountRepo messageCountRepo;
     private Map<String, MessageCountEntity> cachedUsers = new HashMap<>();
+    private final Logger log = LoggerFactory.getLogger(MessageCountServiceDefault.class);
 
     @PostConstruct
     private void fetchUsersFromDatabase() {
@@ -33,18 +33,18 @@ public class MessageCountServiceDefault implements MessageCountService {
                             element
                     )
             );
-            log.warn("Users has successfully fetched from the Database, {} records found.", cachedUsers.size());
+            log.warn("Users has successfully fetched from the Database, {} records found.",
+                    cachedUsers.size());
         }
     }
 
     @Override
-    public Integer amountOfMessages(long idChatTelegram) {
+    public Long amountOfMessages(long idChatTelegram) {
         MessageCountEntity user = cachedUsers.get(String.valueOf(idChatTelegram));
         if (user == null) {
             return null;
         }
-        //TODO: разобраться с long и int. Нахер нам и не нужон этот ваш лонг!
-        return Math.toIntExact(user.getCounter());
+        return user.getCounter();
     }
 
     @Override

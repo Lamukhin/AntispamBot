@@ -11,9 +11,6 @@ public class MetadataServiceDefault implements MetadataService {
 
     private final MetadataRepo metadataRepo;
 
-    public MetadataServiceDefault(MetadataRepo metadataRepo) {
-        this.metadataRepo = metadataRepo;
-    }
 
     @Override
     public MetadataEntity findMetadata(String botName) {
@@ -43,5 +40,9 @@ public class MetadataServiceDefault implements MetadataService {
             metadataEntity.setMessagesDeleted(incr);
             metadataRepo.save(metadataEntity);
         }
+    }
+
+    public MetadataServiceDefault(MetadataRepo metadataRepo) {
+        this.metadataRepo = metadataRepo;
     }
 }

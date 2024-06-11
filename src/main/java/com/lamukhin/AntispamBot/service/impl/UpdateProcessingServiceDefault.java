@@ -29,7 +29,7 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
         if (update.getMessage().getChat().getType().equals("supergroup")) {
             if (update.hasMessage()) {
                 long userTelegramId = update.getMessage().getFrom().getId();
-                Integer amount = messageCountService.amountOfMessages(userTelegramId);
+                Long amount = messageCountService.amountOfMessages(userTelegramId);
 
                 if ((amount != null) && (amount >= 10)) {
                     return;

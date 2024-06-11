@@ -3,9 +3,10 @@ package com.lamukhin.AntispamBot.algorithm;
 import com.lamukhin.AntispamBot.db.entity.DictionaryEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /*
@@ -14,11 +15,10 @@ import java.util.concurrent.Callable;
 
 public class Search implements Callable<Integer> {
 
-    private final Logger log = LoggerFactory.getLogger(Search.class);
     private final String currentWord;
     private final Map<String, DictionaryEntity> wordDictionary;
-
     private final SearchSettings searchSettings;
+    private final Logger log = LoggerFactory.getLogger(Search.class);
 
     public Search(String currentWord, Map<String, DictionaryEntity> dictionary, SearchSettings searchSettings) {
         this.currentWord = currentWord;
@@ -30,7 +30,7 @@ public class Search implements Callable<Integer> {
     public Integer call() {
         try {
             //search for banned symbols and emoji
-            if(currentWord.contains("emoji")){
+            if (currentWord.contains("emoji")) {
                 return 1;
             }
             //search for banned words
@@ -38,7 +38,7 @@ public class Search implements Callable<Integer> {
                 for (String wordInDictionary : wordDictionary.keySet()) {
                     //we don't compare words if their length's delta is more than 3 chars
                     if (Math.abs(currentWord.length() - wordInDictionary.length()) > 3) {
-                        //log.warn("The delta of words is too big for a comparison. {} {}",currentWord,wordInDictionary);
+                        //lo+g.warn("The delta of words is too big for a comparison. {} {}",currentWord,wordInDictionary);
                         continue;
                     }
 
@@ -76,8 +76,8 @@ public class Search implements Callable<Integer> {
             }
         }
 
-        return  (double)
-                ((inWordCrossesCounter/ currentWord.length())+(inWordCrossesCounter/wordInDictionary.length()))
+        return (double)
+                ((inWordCrossesCounter / currentWord.length()) + (inWordCrossesCounter / wordInDictionary.length()))
                 / 2;
 
     }
