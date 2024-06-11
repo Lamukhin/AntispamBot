@@ -65,7 +65,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                 log.error("The message checking has failed: {}", ex.getMessage());
             }
 
-            double coefOfAllMessage = (double) totalMessageScore / wordsOfMessage.length;
+            double coefOfAllMessage = (double) totalMessageScore / wordsOfMessageBEZ_PREDLOGOV.length;
 
             if (isSpam(coefOfAllMessage, wordsOfMessageBEZ_PREDLOGOV.length)) {
                 //TODO: необходимо доработать Вовину либу, потому что без этого работа с колбэками - пытка.
