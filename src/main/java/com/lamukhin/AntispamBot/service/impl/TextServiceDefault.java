@@ -1,9 +1,7 @@
 package com.lamukhin.AntispamBot.service.impl;
 
 import com.lamukhin.AntispamBot.db.entity.DictionaryEntity;
-import com.lamukhin.AntispamBot.db.entity.MessageCountEntity;
 import com.lamukhin.AntispamBot.db.repo.DictionaryRepo;
-import com.lamukhin.AntispamBot.db.repo.MessageCountRepo;
 import com.lamukhin.AntispamBot.service.interfaces.TextService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

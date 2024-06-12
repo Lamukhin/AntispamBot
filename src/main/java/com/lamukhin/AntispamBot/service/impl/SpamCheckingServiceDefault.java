@@ -126,13 +126,13 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
     // yes, im bad at math
     private boolean isSpam(double coefOfAllMessage, int amountOfWords) {
         if (searchSettings.getSegmentForShort().isInSegment(amountOfWords)) {
-            return coefOfAllMessage >= searchSettings.getCoefForShortMessage();
+            return Double.valueOf(coefOfAllMessage).equals(Double.valueOf(searchSettings.getCoefForShortMessage()));
         }
         if (searchSettings.getSegmentForMiddle().isInSegment(amountOfWords)) {
-            return coefOfAllMessage >= searchSettings.getCoefForMiddleMessage();
+            return Double.valueOf(coefOfAllMessage).equals(Double.valueOf(searchSettings.getCoefForMiddleMessage()));
         }
         if (searchSettings.getSegmentForLong().isInSegment(amountOfWords)) {
-            return coefOfAllMessage >= searchSettings.getCoefForLongMessage();
+            return Double.valueOf(coefOfAllMessage).equals(Double.valueOf(searchSettings.getCoefForLongMessage()));
         }
         return false;
     }
