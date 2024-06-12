@@ -67,8 +67,9 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             log.warn("Result of search: found {} of {}",totalMessageScore, wordsOfMessageBEZ_PREDLOGOV.length);
             double coefOfAllMessage = (double) totalMessageScore / wordsOfMessageBEZ_PREDLOGOV.length;
 
-            if (isSpam(coefOfAllMessage, wordsOfMessageBEZ_PREDLOGOV.length)) {
-                //TODO: необходимо доработать Вовину либу, потому что без этого работа с колбэками - пытка.
+            //TODO: зарефакторить это уродство с int и bool
+            if ((isSpam(coefOfAllMessage, wordsOfMessageBEZ_PREDLOGOV.length) == 1)
+                    ||(isSpam(coefOfAllMessage, wordsOfMessageBEZ_PREDLOGOV.length) == 0)) {
                 String spamFoundResponse = String.format(
                         SPAM_FOUND,
                         (int) (coefOfAllMessage * 100)
@@ -98,7 +99,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                 metadataService.updateBannedUsers(engine.getBotUsername());
                 textService.saveMessageIntoDictionary(wordsOfMessage);
 
-            } else if (coefOfAllMessage >= searchSettings.getCoefForLowerLimit()) {
+            } else if (Double.compare(coefOfAllMessage, searchSettings.getCoefForLowerLimit()) == 1) {
                 MessageOperations.replyToMessage(
                         update.getMessage().getChatId(),
                         MAYBE_SPAM,
@@ -124,17 +125,17 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
     }
 
     // yes, im bad at math
-    private boolean isSpam(double coefOfAllMessage, int amountOfWords) {
+    private int isSpam(double coefOfAllMessage, int amountOfWords) {
         if (searchSettings.getSegmentForShort().isInSegment(amountOfWords)) {
-            return Double.valueOf(coefOfAllMessage).equals(Double.valueOf(searchSettings.getCoefForShortMessage()));
+            return Double.compare(coefOfAllMessage, searchSettings.getCoefForShortMessage());
         }
         if (searchSettings.getSegmentForMiddle().isInSegment(amountOfWords)) {
-            return Double.valueOf(coefOfAllMessage).equals(Double.valueOf(searchSettings.getCoefForMiddleMessage()));
+            return Double.compare(coefOfAllMessage, searchSettings.getCoefForMiddleMessage());
         }
         if (searchSettings.getSegmentForLong().isInSegment(amountOfWords)) {
-            return Double.valueOf(coefOfAllMessage).equals(Double.valueOf(searchSettings.getCoefForLongMessage()));
+            return Double.compare(coefOfAllMessage, searchSettings.getCoefForLongMessage());
         }
-        return false;
+        return -1;
     }
 
     @PreDestroy

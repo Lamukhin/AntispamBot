@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.awt.event.KeyEvent;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @SpringBootTest
@@ -59,6 +60,22 @@ public class SearchAlgorithmTest {
     }
 
     private int countItem(char[] list, char item) {
+        HashMap<Character, Character> mapping = new HashMap<>();
+        mapping.put('a','а');
+        mapping.put('e','е');
+        mapping.put('k','к');
+        mapping.put('m','м');
+        mapping.put('o','о');
+        mapping.put('c','с');
+        mapping.put('t','т');
+        mapping.put('b','в');
+        mapping.put('h','н');
+        mapping.put('p','р');
+        mapping.put('x','ч');
+        mapping.put('y','у');
+
+        //А, Е, К, М, О, С, Т, В, Н, Р, Х, Y
+        //a e k m o c t b h p x y
         int count = 0;
         for (char element : list) {
             if (element == item) {

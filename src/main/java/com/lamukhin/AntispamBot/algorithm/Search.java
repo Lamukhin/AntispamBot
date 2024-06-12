@@ -45,7 +45,7 @@ public class Search implements Callable<Integer> {
                     double coefOfCurrentWord = twoWordsCrossesCoef(currentWord, wordInDictionary);
                     log.warn("Coefficient of the current words: {} : \"{}\" and \"{}\"", coefOfCurrentWord, currentWord, wordInDictionary);
 
-                    if (coefOfCurrentWord > searchSettings.getCoefForCurrentWord()) {
+                    if (Double.compare(coefOfCurrentWord, searchSettings.getCoefForCurrentWord()) == 1) {
                         //if a found word EXISTS in our dictionary, we return its value.
                         // otherwise we return just 1, which means that found similar word
                         return coefOfCurrentWord == 1.0 ? wordDictionary.get(wordInDictionary).getValue() : 1;
