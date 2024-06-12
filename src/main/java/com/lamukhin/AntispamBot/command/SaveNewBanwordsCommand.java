@@ -60,7 +60,7 @@ public class SaveNewBanwordsCommand {
         MessageOperations.sendNewMessage(
                 chatId,
                 newBanwordsSavedResponse,
-                ParseMode.MARKDOWN,
+                null,
                 engine
         );
     }
