@@ -77,6 +77,15 @@ public class EditSettingsCommand {
                     );
                     userBotSession.setData("word");
                 }
+                case "lower" -> {
+                    MessageOperations.sendNewMessage(
+                            chatId,
+                            SEND_LOWER_LIMIT_COEF,
+                            ParseMode.MARKDOWN,
+                            engine
+                    );
+                    userBotSession.setData("lower");
+                }
             }
         }
     }
@@ -130,6 +139,15 @@ public class EditSettingsCommand {
                 MessageOperations.sendNewMessage(
                         chatId,
                         SAVED_WORD_COEF,
+                        ParseMode.MARKDOWN,
+                        engine
+                );
+            }
+            case "lower" -> {
+                searchSettings.setCoefForLowerLimit(Double.parseDouble(values[0]));
+                MessageOperations.sendNewMessage(
+                        chatId,
+                        SAVED_LOWER_LIMIT_COEF,
                         ParseMode.MARKDOWN,
                         engine
                 );

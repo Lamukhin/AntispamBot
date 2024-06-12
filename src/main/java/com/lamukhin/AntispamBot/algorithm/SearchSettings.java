@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SearchSettings {
-
     private double coefForCurrentWord = 0.65d;
+    private double coefForLowerLimit = 0.35d;
     private double coefForShortMessage = 0.9d;
     private Segment segmentForShort = new Segment(4, 6);
     private double coefForMiddleMessage = 0.7d;
@@ -86,6 +86,13 @@ public class SearchSettings {
     public void setCoefForMiddleMessage(double coefForMiddleMessage) {
         this.coefForMiddleMessage = coefForMiddleMessage;
     }
+    public double getCoefForLowerLimit() {
+        return coefForLowerLimit;
+    }
+    public void setCoefForLowerLimit(double coefForLowerLimit) {
+        this.coefForLowerLimit = coefForLowerLimit;
+    }
+
 
     public void setCoefForLongMessage(double coefForLongMessage) {
         this.coefForLongMessage = coefForLongMessage;

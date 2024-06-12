@@ -47,7 +47,10 @@ public class TextServiceDefault implements TextService {
                 .replaceAll("\\n", " ")
                 .replaceAll("[\\p{So}\\p{Cn}]", "emoji")
                 .trim();
-        return incomeMessage.split(" ");
+        return Arrays
+                .stream(incomeMessage.split(" "))
+                .filter(word -> (word.length() > 1))
+                .toArray(String[]::new);
     }
 
     @Override

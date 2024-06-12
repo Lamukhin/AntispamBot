@@ -75,7 +75,6 @@ public class Search implements Callable<Integer> {
                 }
             }
         }
-
         return (double)
                 ((inWordCrossesCounter / currentWord.length()) + (inWordCrossesCounter / wordInDictionary.length()))
                 / 2;

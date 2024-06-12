@@ -30,7 +30,8 @@ public class SearchSettingsCommand {
             new CallbackDataSender("Короткое", new CallbackData(EditSettingsCommand.NAME, "short")),
             new CallbackDataSender("Среднее", new CallbackData(EditSettingsCommand.NAME, "middle")),
             new CallbackDataSender("Длинное", new CallbackData(EditSettingsCommand.NAME, "long")),
-            new CallbackDataSender("Кэф слова", new CallbackData(EditSettingsCommand.NAME, "word"))
+            new CallbackDataSender("Кэф слова", new CallbackData(EditSettingsCommand.NAME, "word")),
+            new CallbackDataSender("Нижняя граница совпадения", new CallbackData(EditSettingsCommand.NAME, "lower"))
     }};
 
     @CommandFirst
@@ -42,7 +43,8 @@ public class SearchSettingsCommand {
                     searchSettings.getSegmentForShort().getStart(), searchSettings.getSegmentForShort().getEnd(), df.format(searchSettings.getCoefForShortMessage()),
                     searchSettings.getSegmentForMiddle().getStart(), searchSettings.getSegmentForMiddle().getEnd(), df.format(searchSettings.getCoefForMiddleMessage()),
                     searchSettings.getSegmentForLong().getStart(), df.format(searchSettings.getCoefForLongMessage()),
-                    df.format(searchSettings.getCoefForCurrentWord())
+                    df.format(searchSettings.getCoefForCurrentWord()),
+                    df.format(searchSettings.getCoefForLowerLimit())
             );
             MessageOperations.sendNewMessage(
                     chatId,

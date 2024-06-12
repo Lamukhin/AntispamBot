@@ -64,7 +64,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             } catch (InterruptedException | RuntimeException | ExecutionException ex) {
                 log.error("The message checking has failed: {}", ex.getMessage());
             }
-
+            log.warn("Result of search: found {} of {}",totalMessageScore, wordsOfMessageBEZ_PREDLOGOV.length);
             double coefOfAllMessage = (double) totalMessageScore / wordsOfMessageBEZ_PREDLOGOV.length;
 
             if (isSpam(coefOfAllMessage, wordsOfMessageBEZ_PREDLOGOV.length)) {
@@ -98,7 +98,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                 metadataService.updateBannedUsers(engine.getBotUsername());
                 textService.saveMessageIntoDictionary(wordsOfMessage);
 
-            } else if (coefOfAllMessage >= 0.4) {
+            } else if (coefOfAllMessage >= searchSettings.getCoefForLowerLimit()) {
                 MessageOperations.replyToMessage(
                         update.getMessage().getChatId(),
                         MAYBE_SPAM,
