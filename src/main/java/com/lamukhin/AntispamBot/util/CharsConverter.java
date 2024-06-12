@@ -2,22 +2,36 @@ package com.lamukhin.AntispamBot.util;
 
 import java.util.HashMap;
 
+@Deprecated
+//эту же функцию спокойно выполняет StringUtils.replaceChars
 public class CharsConverter {
-    HashMap<Character, String> mapping = new HashMap<>();
-mapping.put('\u0410',"A");
-mapping.put('\u0412',"B");
-mapping.put('\u0421',"C");
-mapping.put('\u0415',"E");
-mapping.put('\u041D',"H");
-mapping.put('\u041A',"K");
-mapping.put('\u041C',"M");
-mapping.put('\u041E',"O");
-mapping.put('\u0420',"P");
-mapping.put('\u0422',"T");
-mapping.put('\u0423',"Y");
-mapping.put('\u0425',"X");
+    private final static HashMap<Character, Character> charsMap = new HashMap<>() {
+        {
+            put('a', 'а');
+            put('e', 'е');
+            put('k', 'к');
+            put('m', 'м');
+            put('o', 'о');
+            put('c', 'с');
+            put('t', 'т');
+            put('b', 'в');
+            put('h', 'н');
+            put('p', 'р');
+            put('x', 'ч');
+            put('y', 'у');
+        }
+    };
 
     //А, Е, К, М, О, С, Т, В, Н, Р, Х, Y
     //a e k m o c t b h p x y
 
+    public static char[] allSameLatinsToCyrillic(String word) {
+        char[] wordAsArray = word.toCharArray();
+        for (int i = 0; i < wordAsArray.length; i++) {
+            if (charsMap.containsKey(wordAsArray[i])) {
+                wordAsArray[i] = charsMap.get(wordAsArray[i]);
+            }
+        }
+        return wordAsArray;
+    }
 }

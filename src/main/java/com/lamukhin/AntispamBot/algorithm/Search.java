@@ -1,6 +1,8 @@
 package com.lamukhin.AntispamBot.algorithm;
 
 import com.lamukhin.AntispamBot.db.entity.DictionaryEntity;
+import com.lamukhin.AntispamBot.util.CharsConverter;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +43,6 @@ public class Search implements Callable<Integer> {
                         //lo+g.warn("The delta of words is too big for a comparison. {} {}",currentWord,wordInDictionary);
                         continue;
                     }
-
                     double coefOfCurrentWord = twoWordsCrossesCoef(currentWord, wordInDictionary);
                     log.warn("Coefficient of the current words: {} : \"{}\" and \"{}\"", coefOfCurrentWord, currentWord, wordInDictionary);
 
@@ -63,6 +64,8 @@ public class Search implements Callable<Integer> {
     private double twoWordsCrossesCoef(String currentWord, String wordInDictionary) {
         List<Character> crosses = new ArrayList<>();
         int inWordCrossesCounter = 0;
+        currentWord = StringUtils.replaceChars(currentWord, "aekmoctbhpxy", "аекмоствнрху");
+        wordInDictionary = StringUtils.replaceChars(wordInDictionary, "aekmoctbhpxy", "аекмоствнрху");
         for (char currentCharInWord : currentWord.toCharArray()) {
             if (!crosses.contains(currentCharInWord)) {
                 int amountAtWord = countItem(currentWord.toCharArray(), currentCharInWord);
