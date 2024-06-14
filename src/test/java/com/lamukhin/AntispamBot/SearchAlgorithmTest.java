@@ -1,5 +1,6 @@
 package com.lamukhin.AntispamBot;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.awt.event.KeyEvent;
 import java.text.Normalizer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @SpringBootTest
@@ -23,13 +23,15 @@ public class SearchAlgorithmTest {
         String wordInDictionary = "зapaбoтaeшь";
         List<Character> crosses = new ArrayList<>();
         int inWordCrossesCounter = 0;
+        currentWord = StringUtils.replaceChars(currentWord, "aekmoctbhpxy", "аекмоствнрху");
+        wordInDictionary = StringUtils.replaceChars(wordInDictionary, "aekmoctbhpxy", "аекмоствнрху");
         for (char currentCharInWord : currentWord.toCharArray()) {
             log.warn("Очередная буква {} в словe {}", currentCharInWord, currentWord);
             if (!crosses.contains(currentCharInWord)) {
                 log.warn("ранее не было в пересечениях");
-                int amountAtWord = countItemWithHash(currentWord.toCharArray(), currentCharInWord);
+                int amountAtWord = countItem(currentWord.toCharArray(), currentCharInWord);
                 log.warn("{} в словe {} встречается {} раз", currentCharInWord, currentWord, amountAtWord);
-                int amountAtDictionary = countItemWithHash(wordInDictionary.toCharArray(), currentCharInWord);
+                int amountAtDictionary = countItem(wordInDictionary.toCharArray(), currentCharInWord);
                 log.warn("{} в словe {} встречается {} раз", currentCharInWord, wordInDictionary, amountAtDictionary);
                 int minCount = Math.min(amountAtWord, amountAtDictionary);
                 for (int i = 0; i < minCount; i++) {
@@ -43,10 +45,13 @@ public class SearchAlgorithmTest {
         }
         log.warn("счётчик пересечений {}", inWordCrossesCounter);
         log.warn("список пересечений {}", crosses);
+        String formula = "((" + inWordCrossesCounter + " / " + currentWord.length() + ") + (" + inWordCrossesCounter + " / " + wordInDictionary.length() + "))"
+                + "/ " + 2;
+        log.warn("formula {}", formula);
 
-        double result = (double)
-                ((inWordCrossesCounter / currentWord.length()) + (inWordCrossesCounter / wordInDictionary.length()))
-                / 2;
+        double result =
+                (((double) inWordCrossesCounter / (double) currentWord.length()) + ((double) inWordCrossesCounter / (double) wordInDictionary.length()))
+                        / 2;
         log.warn("RESULT COEF {}", result);
 
     }
@@ -60,22 +65,6 @@ public class SearchAlgorithmTest {
     }
 
     private int countItem(char[] list, char item) {
-        HashMap<Character, Character> mapping = new HashMap<>();
-        mapping.put('a','а');
-        mapping.put('e','е');
-        mapping.put('k','к');
-        mapping.put('m','м');
-        mapping.put('o','о');
-        mapping.put('c','с');
-        mapping.put('t','т');
-        mapping.put('b','в');
-        mapping.put('h','н');
-        mapping.put('p','р');
-        mapping.put('x','ч');
-        mapping.put('y','у');
-
-        //А, Е, К, М, О, С, Т, В, Н, Р, Х, Y
-        //a e k m o c t b h p x y
         int count = 0;
         for (char element : list) {
             if (element == item) {
@@ -84,20 +73,22 @@ public class SearchAlgorithmTest {
         }
         return count;
     }
+
     private int countItemWithHash(char[] list, char item) {
         int count = 0;
         int current;
         int searching = String.valueOf(item).hashCode();
-        log.warn("searching hash {}", searching );
+        log.warn("searching hash {}", searching);
         for (char element : list) {
             current = String.valueOf(element).hashCode();
-            log.warn("current hash {}", current );
+            log.warn("current hash {}", current);
             if (current == searching) {
                 count++;
             }
         }
         return count;
     }
+
     private int countItemNormalized(char[] wordAsChars, char searchingChar) {
         //log.warn("зашли в countItem");
         int count = 0;

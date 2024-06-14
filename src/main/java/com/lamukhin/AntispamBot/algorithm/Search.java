@@ -78,10 +78,9 @@ public class Search implements Callable<Integer> {
                 }
             }
         }
-        return (double)
-                ((inWordCrossesCounter / currentWord.length()) + (inWordCrossesCounter / wordInDictionary.length()))
-                / 2;
-
+        double coefOfCurrentWordCrosses = (double) inWordCrossesCounter / (double) currentWord.length();
+        double coefOfDictionaryWordCrosses = (double) inWordCrossesCounter / (double) wordInDictionary.length();
+        return (coefOfCurrentWordCrosses + coefOfDictionaryWordCrosses) / 2;
     }
 
     private int countItem(char[] list, char item) {
