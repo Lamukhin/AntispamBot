@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SearchSettings {
-    private double coefForCurrentWord = 0.65d;
+    private double coefForCurrentWord = 0.85d;
     private double coefForLowerLimit = 0.35d;
     private double coefForShortMessage = 0.9d;
     private Segment segmentForShort = new Segment(4, 6);

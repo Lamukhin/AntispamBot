@@ -36,17 +36,20 @@ public class Search implements Callable<Integer> {
             }
             //search for banned words
             for (String wordInDictionary : wordDictionary.keySet()) {
-                //we don't compare words if their length's delta is more than 3 chars
-                if (Math.abs(currentWord.length() - wordInDictionary.length()) > 3) {
-                    continue;
-                }
-                double coefOfCurrentWord = twoWordsCrossesCoef(currentWord, wordInDictionary);
-                log.warn("Coefficient of the current words: {} : \"{}\" and \"{}\"", coefOfCurrentWord, currentWord, wordInDictionary);
+                if(wordInDictionary.length() >=3) {
+                    //we don't compare words if their length's delta is more than 3 chars
+                    if (Math.abs(currentWord.length() - wordInDictionary.length()) > 3) {
+                        continue;
+                    }
+                    double coefOfCurrentWord = twoWordsCrossesCoef(currentWord, wordInDictionary);
+                    //log.warn("Coefficient of the current words: {} : \"{}\" and \"{}\"", coefOfCurrentWord, currentWord, wordInDictionary);
 
-                if (Double.compare(coefOfCurrentWord, searchSettings.getCoefForCurrentWord()) == 1) {
-                    //if a found word EXISTS in our dictionary, we return its value.
-                    // otherwise we return just 1, which means that found similar word
-                    return Double.compare(coefOfCurrentWord, 1.0) == 0 ? wordDictionary.get(wordInDictionary).getValue() : 1;
+                    if (Double.compare(coefOfCurrentWord, searchSettings.getCoefForCurrentWord()) == 1) {
+                        //if a found word EXISTS in our dictionary, we return its value.
+                        // otherwise we return just 1, which means that found similar word
+                        log.warn("Final coef of the current words: {} : \"{}\" and \"{}\"", coefOfCurrentWord, currentWord, wordInDictionary);
+                        return Double.compare(coefOfCurrentWord, 1.0) == 0 ? wordDictionary.get(wordInDictionary).getValue() : 1;
+                    }
                 }
             }
             //log.warn("The word \"{}\" has not found in our dictionary", currentWord);

@@ -46,9 +46,16 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
         //TODO: не уверен, что тут не будет npe
         if ((update.hasMessage()) && (update.getMessage().hasText())) {
             int totalMessageScore = 0;
+            boolean itIsTest = false;
+            String incomeMessage = update.getMessage().getText();
+            if (incomeMessage.startsWith("!тест")){
+                itIsTest = true;
+                incomeMessage = incomeMessage.replaceFirst("!тест", "");
+            }
             String[] wordsOfMessage = textService.invokeWordsFromRawMessage(
-                    update.getMessage().getText(),
+                    incomeMessage,
                     TextFiltrationProps.NO_SHORTS);
+
             //я хочу на будущее и предлоги/частицы себе сохранить, но в данном месте это ломает логику.
             //поэтому для выведения кэфа я профильтрую без них, а сохраню в базу с ними
             //TODO: исправить этот кринж (когда-нибудь)
@@ -66,9 +73,9 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             } catch (InterruptedException | RuntimeException | ExecutionException ex) {
                 log.error("The message checking has failed: {}", ex.getMessage());
             }
-            log.warn("Result of search: found {} of {}",totalMessageScore, wordsOfMessage.length);
-            double coefOfAllMessage = (double) totalMessageScore / (double) wordsOfMessage.length;
 
+            double coefOfAllMessage = (double) totalMessageScore / (double) wordsOfMessage.length;
+            log.warn("Result of search: found {} of {} words, final coef of all message {}",totalMessageScore, wordsOfMessage.length, coefOfAllMessage);
             //TODO: зарефакторить это уродство с int и bool
             if ((isSpam(coefOfAllMessage, wordsOfMessage.length) == 1)
                     ||(isSpam(coefOfAllMessage, wordsOfMessage.length) == 0)) {
@@ -83,23 +90,21 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                         update.getMessage().getMessageId(),
                         engine);
 
-                var send = BanChatMember.builder()
-                        .chatId(update.getMessage().getChatId())
-                        .userId(update.getMessage().getFrom().getId())
-                        .revokeMessages(true)
-                        .untilDate(0)
-                        .build();
-                engine.executeNotException(send);
+                if(!itIsTest) {
+                    var send = BanChatMember.builder()
+                            .chatId(update.getMessage().getChatId())
+                            .userId(update.getMessage().getFrom().getId())
+                            .revokeMessages(true)
+                            .untilDate(0)
+                            .build();
+                    engine.executeNotException(send);
 
-
-//                MessageOperations.deleteMessage(
-//                        update.getMessage().getChatId(),
-//                        update.getMessage().getMessageId(),
-//                        engine);
-
-                metadataService.updateDeletedMessages(engine.getBotUsername());
-                metadataService.updateBannedUsers(engine.getBotUsername());
-                textService.saveMessageIntoDictionary(wordsOfMessage);
+                    metadataService.updateDeletedMessages(engine.getBotUsername());
+                    metadataService.updateBannedUsers(engine.getBotUsername());
+                    textService.saveMessageIntoDictionary(wordsOfMessage);
+                } else {
+                    log.warn("IT WAS TEST REQUEST, DATA IS NOT SAVED!");
+                }
 
             } else if (Double.compare(coefOfAllMessage, searchSettings.getCoefForLowerLimit()) == 1) {
                 MessageOperations.replyToMessage(
@@ -145,3 +150,8 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
         this.searchSettings = searchSettings;
     }
 }
+
+//                MessageOperations.deleteMessage(
+//                        update.getMessage().getChatId(),
+//                        update.getMessage().getMessageId(),
+//                        engine);
