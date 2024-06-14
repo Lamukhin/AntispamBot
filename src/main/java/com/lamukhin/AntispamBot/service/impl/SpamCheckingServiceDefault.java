@@ -77,11 +77,14 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             double coefOfAllMessage = (double) totalMessageScore / (double) wordsOfMessage.length;
             log.warn("Result of search: found {} of {} words, final coef of all message {}",totalMessageScore, wordsOfMessage.length, coefOfAllMessage);
             //TODO: зарефакторить это уродство с int и bool
+            String testPostfix = itIsTest ? "Это был тестовый запрос." : "";
             if ((isSpam(coefOfAllMessage, wordsOfMessage.length) == 1)
                     ||(isSpam(coefOfAllMessage, wordsOfMessage.length) == 0)) {
+
                 String spamFoundResponse = String.format(
                         SPAM_FOUND,
-                        (int) (coefOfAllMessage * 100)
+                        (int) (coefOfAllMessage * 100),
+                        testPostfix
                 );
 
                 MessageOperations.replyToMessage(
@@ -109,7 +112,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             } else if (Double.compare(coefOfAllMessage, searchSettings.getCoefForLowerLimit()) == 1) {
                 MessageOperations.replyToMessage(
                         update.getMessage().getChatId(),
-                        MAYBE_SPAM,
+                        String.format(MAYBE_SPAM, testPostfix),
                         update.getMessage().getMessageId(),
                         engine);
             }
