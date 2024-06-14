@@ -3,6 +3,7 @@ package com.lamukhin.AntispamBot.service.impl;
 import com.lamukhin.AntispamBot.db.entity.DictionaryEntity;
 import com.lamukhin.AntispamBot.db.repo.DictionaryRepo;
 import com.lamukhin.AntispamBot.service.interfaces.TextService;
+import com.lamukhin.AntispamBot.util.TextFiltrationProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,9 +23,8 @@ public class TextServiceDefault implements TextService {
     private Map<String, DictionaryEntity> cachedDictionary = new HashMap<>();
     private final DictionaryRepo dictionaryRepo;
 
-
     @PostConstruct
-    private void fetchDictionaryFromDatabase(){
+    private void fetchDictionaryFromDatabase() {
         List<DictionaryEntity> result = dictionaryRepo.findAll();
         if (result.isEmpty()) {
             log.warn("Dictionary is empty in Database, cache is empty now too.");
@@ -38,17 +38,28 @@ public class TextServiceDefault implements TextService {
             log.warn("Dictionary has successfully fetched from the Database, {} records found.", cachedDictionary.size());
         }
     }
+
     @Override
-    public String[] invokeWordsFromRawMessage(String incomeMessage) {
+    public String[] invokeWordsFromRawMessage(String incomeMessage, TextFiltrationProps textFiltrationProps) {
         incomeMessage = incomeMessage
                 .toLowerCase()
                 .replaceAll("\\n", " ")
                 .replaceAll("[\\p{So}\\p{Cn}]", "emoji")
                 .trim();
-        return Arrays
-                .stream(incomeMessage.split(" "))
-                .filter(word -> (word.length() > 1))
-                .toArray(String[]::new);
+        switch (textFiltrationProps) { // switch более наглядный, если в будущем фильтров прибавится
+            case NO_SHORTS -> {
+                return Arrays
+                        .stream(incomeMessage.split(" "))
+                        .filter(word -> (word.length() >= 3))
+                        .toArray(String[]::new);
+            }
+            default -> {
+                return Arrays
+                        .stream(incomeMessage.split(" "))
+                        .filter(word -> (word.length() > 1)) // word.length() == 0 causes npe at division
+                        .toArray(String[]::new);
+            }
+        }
     }
 
     @Override
@@ -56,7 +67,7 @@ public class TextServiceDefault implements TextService {
         Arrays.stream(wordsOfMessage)
                 .forEach(word -> {
                     DictionaryEntity currentNewWord = new DictionaryEntity(word, 1);
-                    if (cachedDictionary.putIfAbsent(word, currentNewWord) == null){
+                    if (cachedDictionary.putIfAbsent(word, currentNewWord) == null) {
                         dictionaryRepo.save(currentNewWord);
                     }
                 });

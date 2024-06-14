@@ -49,7 +49,7 @@ public class SaveNewBanwordsCommand {
                                 @ParamName("chatId") Long chatId,
                                 CommandContext context) {
         String newMessage = context.getUpdate().getMessage().getText();
-        String[] words = textService.invokeWordsFromRawMessage(newMessage);
+        String[] words = textService.invokeWordsFromRawMessage(newMessage, null);
         textService.saveMessageIntoDictionary(words);
         log.warn("New banwords has been added into the dictionary.");
         String newBanwordsSavedResponse = String.format(

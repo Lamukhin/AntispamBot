@@ -1,7 +1,6 @@
 package com.lamukhin.AntispamBot.algorithm;
 
 import com.lamukhin.AntispamBot.db.entity.DictionaryEntity;
-import com.lamukhin.AntispamBot.util.CharsConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,21 +35,18 @@ public class Search implements Callable<Integer> {
                 return 1;
             }
             //search for banned words
-            if (currentWord.length() >= 3) { //a word is considered a string of at least 3 characters. we don't consider "prepositions"
-                for (String wordInDictionary : wordDictionary.keySet()) {
-                    //we don't compare words if their length's delta is more than 3 chars
-                    if (Math.abs(currentWord.length() - wordInDictionary.length()) > 3) {
-                        //lo+g.warn("The delta of words is too big for a comparison. {} {}",currentWord,wordInDictionary);
-                        continue;
-                    }
-                    double coefOfCurrentWord = twoWordsCrossesCoef(currentWord, wordInDictionary);
-                    log.warn("Coefficient of the current words: {} : \"{}\" and \"{}\"", coefOfCurrentWord, currentWord, wordInDictionary);
+            for (String wordInDictionary : wordDictionary.keySet()) {
+                //we don't compare words if their length's delta is more than 3 chars
+                if (Math.abs(currentWord.length() - wordInDictionary.length()) > 3) {
+                    continue;
+                }
+                double coefOfCurrentWord = twoWordsCrossesCoef(currentWord, wordInDictionary);
+                log.warn("Coefficient of the current words: {} : \"{}\" and \"{}\"", coefOfCurrentWord, currentWord, wordInDictionary);
 
-                    if (Double.compare(coefOfCurrentWord, searchSettings.getCoefForCurrentWord()) == 1) {
-                        //if a found word EXISTS in our dictionary, we return its value.
-                        // otherwise we return just 1, which means that found similar word
-                        return coefOfCurrentWord == 1.0 ? wordDictionary.get(wordInDictionary).getValue() : 1;
-                    }
+                if (Double.compare(coefOfCurrentWord, searchSettings.getCoefForCurrentWord()) == 1) {
+                    //if a found word EXISTS in our dictionary, we return its value.
+                    // otherwise we return just 1, which means that found similar word
+                    return Double.compare(coefOfCurrentWord, 1.0) == 0 ? wordDictionary.get(wordInDictionary).getValue() : 1;
                 }
             }
             //log.warn("The word \"{}\" has not found in our dictionary", currentWord);

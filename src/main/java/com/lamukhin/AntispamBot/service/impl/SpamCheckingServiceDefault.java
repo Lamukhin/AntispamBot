@@ -7,6 +7,7 @@ import com.lamukhin.AntispamBot.service.interfaces.MetadataService;
 import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
 import com.lamukhin.AntispamBot.service.interfaces.TextService;
 import com.lamukhin.AntispamBot.util.MessageOperations;
+import com.lamukhin.AntispamBot.util.TextFiltrationProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -45,11 +46,12 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
         //TODO: не уверен, что тут не будет npe
         if ((update.hasMessage()) && (update.getMessage().hasText())) {
             int totalMessageScore = 0;
-            String[] wordsOfMessage = textService.invokeWordsFromRawMessage(update.getMessage().getText());
+            String[] wordsOfMessage = textService.invokeWordsFromRawMessage(
+                    update.getMessage().getText(),
+                    TextFiltrationProps.NO_SHORTS);
             //я хочу на будущее и предлоги/частицы себе сохранить, но в данном месте это ломает логику.
             //поэтому для выведения кэфа я профильтрую без них, а сохраню в базу с ними
             //TODO: исправить этот кринж (когда-нибудь)
-            String[] wordsOfMessageBEZ_PREDLOGOV = deleteShortWords(wordsOfMessage);
 
             List<Callable<Integer>> tasks = createSearchingTasks(
                     wordsOfMessage,
@@ -64,12 +66,12 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             } catch (InterruptedException | RuntimeException | ExecutionException ex) {
                 log.error("The message checking has failed: {}", ex.getMessage());
             }
-            log.warn("Result of search: found {} of {}",totalMessageScore, wordsOfMessageBEZ_PREDLOGOV.length);
-            double coefOfAllMessage = (double) totalMessageScore / wordsOfMessageBEZ_PREDLOGOV.length;
+            log.warn("Result of search: found {} of {}",totalMessageScore, wordsOfMessage.length);
+            double coefOfAllMessage = (double) totalMessageScore / (double) wordsOfMessage.length;
 
             //TODO: зарефакторить это уродство с int и bool
-            if ((isSpam(coefOfAllMessage, wordsOfMessageBEZ_PREDLOGOV.length) == 1)
-                    ||(isSpam(coefOfAllMessage, wordsOfMessageBEZ_PREDLOGOV.length) == 0)) {
+            if ((isSpam(coefOfAllMessage, wordsOfMessage.length) == 1)
+                    ||(isSpam(coefOfAllMessage, wordsOfMessage.length) == 0)) {
                 String spamFoundResponse = String.format(
                         SPAM_FOUND,
                         (int) (coefOfAllMessage * 100)
@@ -107,12 +109,6 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                         engine);
             }
         }
-    }
-
-    private String[] deleteShortWords(String[] wordsOfMessage) {
-        return Arrays.stream(wordsOfMessage)
-                .filter(word -> (word.length() >= 3))
-                .toArray(String[]::new);
     }
 
     private List<Callable<Integer>> createSearchingTasks(String[] wordsOfMessage, Map<String, DictionaryEntity> cachedDictionary, SearchSettings searchSettings) {

@@ -35,7 +35,7 @@ public class BanCommand {
             long spammerId = update.getMessage().getReplyToMessage().getFrom().getId();
             if (!(admins.getSet().contains(String.valueOf(spammerId)))) {
                 String spamMessage = update.getMessage().getReplyToMessage().getText();
-                String[] wordsOfMessage = textService.invokeWordsFromRawMessage(spamMessage);
+                String[] wordsOfMessage = textService.invokeWordsFromRawMessage(spamMessage, null);
                 textService.saveMessageIntoDictionary(wordsOfMessage);
                 var send = BanChatMember.builder()
                         .chatId(chatId)
