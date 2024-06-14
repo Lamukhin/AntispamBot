@@ -1,7 +1,7 @@
 package com.lamukhin.AntispamBot.command;
 
 import com.lamukhin.AntispamBot.listener.CustomUpdateListener;
-import com.lamukhin.AntispamBot.role.Admins;
+import com.lamukhin.AntispamBot.service.interfaces.AdminService;
 import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public class StopBotCommand {
 
     public static final String NAME = "/stop_bot";
     private final CustomUpdateListener customUpdateListener;
-    private final Admins admins;
+    private final AdminService adminService;
     @Value("${bot_owner_tg_id}")
     private long botOwnerId;
 
@@ -28,7 +28,7 @@ public class StopBotCommand {
                         @ParamName("chatId") Long chatId,
                         @ParamName("userId") Long userId) {
 
-        if ((admins.getSet().contains(String.valueOf(userId)))||(userId.equals(botOwnerId))) {
+        if ((adminService.hasAdminStatusByUserId(userId))||(userId.equals(botOwnerId))) {
             if (!(customUpdateListener.getSwitcher().isPaused())) {
 
                 String switcherName = invokeFullNameFromUpdate(update);
@@ -65,8 +65,8 @@ public class StopBotCommand {
         return stringBuilder.toString();
     }
 
-    public StopBotCommand(Admins admins, CustomUpdateListener customUpdateListener) {
-        this.admins = admins;
+    public StopBotCommand(CustomUpdateListener customUpdateListener, AdminService adminService) {
+        this.adminService = adminService;
         this.customUpdateListener = customUpdateListener;
     }
 }

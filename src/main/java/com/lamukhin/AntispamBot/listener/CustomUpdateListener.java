@@ -53,28 +53,25 @@ public class CustomUpdateListener implements HandlerBotUpdate {
             this.lastSwitchTimestamp = System.currentTimeMillis();
         }
 
-        public void setPaused(boolean paused) {
+        //не уверен, что ТГ обрабатывает многопоточно запросы, но лучше перестраховаться
+        public synchronized void setPaused(boolean paused) {
             this.paused = paused;
         }
-
-        public void setLastSwitchTimestamp(long lastSwitchTimestamp) {
+        public synchronized void setLastSwitcherName(String lastSwitcherName) {
+            this.lastSwitcherName = lastSwitcherName;
+        }
+        public synchronized void setLastSwitchTimestamp(long lastSwitchTimestamp) {
             this.lastSwitchTimestamp = lastSwitchTimestamp;
         }
 
         public boolean isPaused() {
             return paused;
         }
-
         public long getLastSwitchTimestamp() {
             return lastSwitchTimestamp;
         }
-
         public String getLastSwitcherName() {
             return lastSwitcherName;
-        }
-
-        public void setLastSwitcherName(String lastSwitcherName) {
-            this.lastSwitcherName = lastSwitcherName;
         }
     }
 

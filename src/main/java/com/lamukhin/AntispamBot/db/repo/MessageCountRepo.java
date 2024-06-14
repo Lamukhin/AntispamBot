@@ -7,5 +7,6 @@ import java.util.UUID;
 
 public interface MessageCountRepo extends JpaRepository<MessageCountEntity, UUID> {
 
+    //TODO: проверить, норм ли это ваще работает
     MessageCountEntity findByIdChatTelegram(long id);
 }

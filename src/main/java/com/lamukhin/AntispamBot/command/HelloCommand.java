@@ -1,7 +1,10 @@
 package com.lamukhin.AntispamBot.command;
 
-import com.lamukhin.AntispamBot.role.Admins;
+import com.lamukhin.AntispamBot.service.interfaces.AdminService;
+import com.lamukhin.AntispamBot.util.Commands;
 import com.lamukhin.AntispamBot.util.MessageOperations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
@@ -24,7 +27,8 @@ import static com.lamukhin.AntispamBot.util.ResponseMessage.HELLO;
 public class HelloCommand {
 
     public static final String NAME = "/start";
-    private final Admins admins;
+    private final AdminService adminService;
+    private final Logger log = LoggerFactory.getLogger(HelloCommand.class);
     @Value("${bot_owner_tg_id}")
     private long botOwnerId;
 
@@ -36,7 +40,7 @@ public class HelloCommand {
         if (chatId.equals(userId)) {
             context.getEngine().executeNotException(
                     new SetMyCommands(
-                            listOfCommands(userId),
+                            createListOfCommands(userId),
                             new BotCommandScopeDefault(),
                             null
                     )
@@ -51,23 +55,19 @@ public class HelloCommand {
         }
     }
 
-    private List<BotCommand> listOfCommands(Long userId) {
-        List<BotCommand> listOfCommands = new ArrayList<>();
-        listOfCommands.add(new BotCommand(PingBotCommand.NAME, "Статус бота"));
-
-        if ((admins.getSet().contains(String.valueOf(userId))) || (userId.equals(botOwnerId))) {
-            listOfCommands.add(new BotCommand(StartBotCommand.NAME, "Приостановить работу бота"));
-            listOfCommands.add(new BotCommand(StopBotCommand.NAME, "Возобновить работу бота"));
-        }
+    private List<BotCommand> createListOfCommands(Long userId) {
+        List<BotCommand> listOfCommands = new ArrayList<>(
+                Commands.getDefaultUserCommands()
+        );
+        if ((adminService.hasAdminStatusByUserId(userId)) || (userId.equals(botOwnerId))) {
+            listOfCommands.addAll(Commands.getAdminCommands());        }
         if (userId.equals(botOwnerId)) {
-            listOfCommands.add(new BotCommand(AddAdminCommand.NAME, "Добавить админа"));
-            listOfCommands.add(new BotCommand(SaveNewBanwordsCommand.NAME, "Пополнить словарь"));
-            listOfCommands.add(new BotCommand(SearchSettingsCommand.NAME, "Настройки поиска"));
+            listOfCommands.addAll(Commands.getOwnerCommands());
         }
         return listOfCommands;
     }
 
-    public HelloCommand(Admins admins) {
-        this.admins = admins;
+    public HelloCommand(AdminService adminService) {
+        this.adminService = adminService;
     }
 }

@@ -1,6 +1,5 @@
 package com.lamukhin.AntispamBot.command;
 
-import com.lamukhin.AntispamBot.role.Admins;
 import com.lamukhin.AntispamBot.service.interfaces.MetadataService;
 import com.lamukhin.AntispamBot.service.interfaces.TextService;
 import org.slf4j.Logger;

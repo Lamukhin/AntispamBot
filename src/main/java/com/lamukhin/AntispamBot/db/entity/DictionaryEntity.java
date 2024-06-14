@@ -24,10 +24,6 @@ public final class DictionaryEntity {
     public DictionaryEntity() {
     }
 
-    public UUID getId() {
-        return id;
-    }
-
     public String getWord() {
         return word;
     }

@@ -1,7 +1,6 @@
 package com.lamukhin.AntispamBot.command;
 
 import com.lamukhin.AntispamBot.listener.CustomUpdateListener;
-import com.lamukhin.AntispamBot.role.Admins;
 import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
