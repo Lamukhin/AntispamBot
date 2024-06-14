@@ -1,5 +1,6 @@
 package com.lamukhin.AntispamBot.command;
 
+import com.lamukhin.AntispamBot.service.interfaces.AdminService;
 import com.lamukhin.AntispamBot.service.interfaces.MetadataService;
 import com.lamukhin.AntispamBot.service.interfaces.TextService;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ public class BanCommand {
     public static final String NAME = "!spam";
     private final TextService textService;
     private final MetadataService metadataService;
-    private final Admins admins;
+    private final AdminService adminService;
 
     private final Logger log = LoggerFactory.getLogger(BanCommand.class);
 
@@ -29,10 +30,10 @@ public class BanCommand {
                             @ParamName("userId") Long userId,
                             @ParamName("chatId") Long chatId,
                             Update update) {
-        if ((admins.getSet().contains(String.valueOf(userId)))
+        if ((adminService.hasAdminStatusByUserId(userId))
                 && (!(userId.equals(chatId)))) {
             long spammerId = update.getMessage().getReplyToMessage().getFrom().getId();
-            if (!(admins.getSet().contains(String.valueOf(spammerId)))) {
+            if (adminService.findByUserId(userId) == null) {
                 String spamMessage = update.getMessage().getReplyToMessage().getText();
                 String[] wordsOfMessage = textService.invokeWordsFromRawMessage(spamMessage, null);
                 textService.saveMessageIntoDictionary(wordsOfMessage);
@@ -51,9 +52,9 @@ public class BanCommand {
         }
     }
 
-    public BanCommand(TextService textService, MetadataService metadataService, Admins admins) {
+    public BanCommand(TextService textService, MetadataService metadataService, AdminService adminService) {
         this.textService = textService;
         this.metadataService = metadataService;
-        this.admins = admins;
+        this.adminService = adminService;
     }
 }

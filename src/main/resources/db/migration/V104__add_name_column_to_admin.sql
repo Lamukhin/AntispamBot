@@ -1,0 +1,1 @@
+ALTER TABLE admin ADD COLUMN full_name varchar(50);

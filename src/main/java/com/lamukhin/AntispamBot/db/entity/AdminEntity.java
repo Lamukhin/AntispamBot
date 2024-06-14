@@ -1,27 +1,34 @@
 package com.lamukhin.AntispamBot.db.entity;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.persistence.*;
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "admin")
-public class AdminEntity {
+public class AdminEntity implements Comparable<AdminEntity> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    @Column(name="user_telegram_id")
+    @Column(name = "user_telegram_id")
     private long userId;
-    @Column(name="is_active")
+    @Column(name = "is_active")
     private boolean isActive;
 
-    public AdminEntity(long userId) {
+    @Column(name = "full_name")
+    private String fullName;
+
+    public AdminEntity(long userId, String fullName) {
         this.userId = userId;
+        this.fullName = fullName;
         this.isActive = true;
     }
 
-    public AdminEntity() {}
+    public AdminEntity() {
+    }
 
 
     @Override
@@ -41,11 +48,26 @@ public class AdminEntity {
         return userId;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
     public boolean isActive() {
         return isActive;
     }
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    @Override
+    public int compareTo(@NotNull AdminEntity o) {
+
+        if (this.isActive && !o.isActive) {
+            return 1;
+        } else if ((o.isActive && !this.isActive)) {
+            return -1;
+        }
+        return 0;
     }
 }

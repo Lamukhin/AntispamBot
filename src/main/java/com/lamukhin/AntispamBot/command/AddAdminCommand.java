@@ -24,7 +24,7 @@ public class AddAdminCommand {
 
     public static final String NAME = "/add_admin";
     private final AdminService adminService;
-    private final Logger log = LoggerFactory.getLogger(SaveNewBanwordsCommand.class);
+    private final Logger log = LoggerFactory.getLogger(AddAdminCommand.class);
 
     @Value("${bot_owner_tg_id}")
     private long botOwnerId;
@@ -51,25 +51,48 @@ public class AddAdminCommand {
                                  @ParamName("chatId") Long chatId,
                                  CommandContext context) {
         User forwardedUser = context.getUpdate().getMessage().getForwardFrom();
-        if (forwardedUser != null){
-            long invokedCandidateId = forwardedUser.getId();
-            adminService.getSet().add(String.valueOf(invokedCandidateId));
+        long id;
+        String fullName;
+        //TODO: по-хорошему, все бы CommandOther надо обернуть в try-catch, но не сегодня
+        try {
+            if (forwardedUser != null) {
+                id = forwardedUser.getId();
+                fullName = invokeFullNameFromUser(forwardedUser);
+            } else {
+                String manuallyEnteredData = context.getUpdate().getMessage().getText().trim();
+                String[] idAndName = manuallyEnteredData.split(" ", 2);
+                id = Long.parseLong(idAndName[0]);
+                fullName = idAndName[1];
+            }
+            adminService.saveNewAdmin(id, fullName);
             MessageOperations.sendNewMessage(
                     chatId,
-                    String.format(SAVED_NEW_ADMIN, invokedCandidateId),
+                    String.format(SAVED_NEW_ADMIN, id, fullName),
                     null,
                     engine
             );
-        } else {
-            String receivedCandidateId = context.getUpdate().getMessage().getText();
-            adminService.getSet().add(receivedCandidateId);
+        } catch (Exception ex) {
             MessageOperations.sendNewMessage(
                     chatId,
-                    String.format(SAVED_NEW_ADMIN, receivedCandidateId),
+                    "Что-то пошло не так. Проверьте корректность введённых данных.",
                     null,
                     engine
             );
         }
+
+    }
+
+    // TODO: если обслуживающих методов наберется несколько,
+    //  вынести в отдельный сервис
+    private String invokeFullNameFromUser(User forwardedUser) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(forwardedUser.getFirstName());
+        String lastName = forwardedUser.getLastName();
+        if (lastName != null) {
+            stringBuilder.append(" ");
+            stringBuilder.append(lastName);
+        }
+        return stringBuilder.toString();
     }
 
     public AddAdminCommand(AdminService adminService) {

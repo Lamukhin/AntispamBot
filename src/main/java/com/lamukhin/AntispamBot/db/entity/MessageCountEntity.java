@@ -12,14 +12,14 @@ public final class MessageCountEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     @Column(name="id_chat_telegram")
-    private long idChatTelegram;
+    private long userId;
     @Column(name="counter")
     private long counter;
 
     public MessageCountEntity() {}
 
-    public MessageCountEntity(long idChatTelegram, long counter) {
-        this.idChatTelegram = idChatTelegram;
+    public MessageCountEntity(long userId, long counter) {
+        this.userId = userId;
         this.counter = counter;
     }
 
@@ -27,8 +27,8 @@ public final class MessageCountEntity {
         return id;
     }
 
-    public long getIdChatTelegram() {
-        return idChatTelegram;
+    public long getUserId() {
+        return userId;
     }
 
     public long getCounter() {
@@ -40,12 +40,12 @@ public final class MessageCountEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MessageCountEntity that = (MessageCountEntity) o;
-        return idChatTelegram == that.idChatTelegram && counter == that.counter && Objects.equals(id, that.id);
+        return userId == that.userId && counter == that.counter && Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, idChatTelegram, counter);
+        return Objects.hash(id, userId, counter);
     }
 
     public void setCounter(long counter) {

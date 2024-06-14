@@ -5,6 +5,8 @@ import com.lamukhin.AntispamBot.db.repo.AdminRepo;
 import com.lamukhin.AntispamBot.service.interfaces.AdminService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AdminServiceDefault implements AdminService {
 
@@ -27,19 +29,34 @@ public class AdminServiceDefault implements AdminService {
     }
 
     @Override
-    public void saveNewAdmin(long userId) {
+    public List<AdminEntity> findAll() {
+        return adminRepo.findAll();
+    }
+
+    @Override
+    public void saveNewAdmin(long userId, String fullName) {
         AdminEntity adminEntity = adminRepo.findByUserId(userId);
         if (adminEntity == null) {
-            adminEntity = new AdminEntity(userId);
+            adminEntity = new AdminEntity(userId, fullName);
             adminRepo.save(adminEntity);
         }
     }
 
     @Override
-    public void updatePermissions(long userId) {
+    public void removeAdminRights(long userId) {
         AdminEntity adminEntity = adminRepo.findByUserId(userId);
         if (adminEntity != null) {
-            adminEntity.setActive(!adminEntity.isActive());
+            adminEntity.setActive(false);
+            adminRepo.save(adminEntity);
+        }
+        //throw new RuntimeException(String.format("There is no Admin in database with ID %d", userId));
+    }
+
+    @Override
+    public void restoreAdminRights(long userId) {
+        AdminEntity adminEntity = adminRepo.findByUserId(userId);
+        if (adminEntity != null) {
+            adminEntity.setActive(true);
             adminRepo.save(adminEntity);
         }
         //throw new RuntimeException(String.format("There is no Admin in database with ID %d", userId));

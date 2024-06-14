@@ -1,6 +1,7 @@
 package com.lamukhin.AntispamBot.command;
 
 import com.lamukhin.AntispamBot.listener.CustomUpdateListener;
+import com.lamukhin.AntispamBot.service.interfaces.AdminService;
 import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -15,7 +16,7 @@ import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 public class StartBotCommand {
 
     public static final String NAME = "/start_bot";
-    private final Admins admins;
+    private final AdminService adminService;
     private final CustomUpdateListener customUpdateListener;
 
     @CommandFirst
@@ -24,7 +25,7 @@ public class StartBotCommand {
                          @ParamName("chatId") Long chatId,
                          @ParamName("userId") Long userId) {
 
-        if (admins.getSet().contains(String.valueOf(userId))) {
+        if (adminService.hasAdminStatusByUserId(userId)) {
             if (customUpdateListener.getSwitcher().isPaused()) {
                 String switcherName = invokeFullNameFromUpdate(update);
                 customUpdateListener.getSwitcher().setPaused(false);
@@ -61,8 +62,8 @@ public class StartBotCommand {
         return stringBuilder.toString();
     }
 
-    public StartBotCommand(Admins admins, CustomUpdateListener customUpdateListener) {
-        this.admins = admins;
+    public StartBotCommand(AdminService adminService, CustomUpdateListener customUpdateListener) {
+        this.adminService = adminService;
         this.customUpdateListener = customUpdateListener;
     }
 }

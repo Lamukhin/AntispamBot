@@ -33,8 +33,9 @@ public final class ResponseMessage {
     public static final String SEND_LOWER_LIMIT_COEF = "Пришлите новое значение кэфа нижней границы спама в формате 0.5";
     public static final String SAVED_WORD_COEF = "Кэф для каждого слова изменён. /settings, чтобы убедиться";
     public static final String SAVED_LOWER_LIMIT_COEF = "Кэф нижней границы совпадения изменён. /settings, чтобы убедиться";
-    public static final String SAVED_NEW_ADMIN = "Получили TG ID %s юзера и сохранили нового админа.";
-    public static final String SEND_NEW_CANDIDATE = "Отправьте сообщение от кандидата в админы или его userId";
+    public static final String SAVED_NEW_ADMIN = "Получили TG ID %s и имя \'%s\' юзера и сохранили нового админа.";
+    public static final String SEND_NEW_CANDIDATE = "Отправьте сообщение от кандидата в админы или его userId и имя через пробел";
+    public static final String LIST_OF_ADMINS = "Список админов группы: %s\nСкопируйте и отправьте ID человека, которого хотите исключить из админов.";
     public static final String YOUR_STATUS = """
             Ваш статус \"Администратор\" *%sактивен*.
             Доступные команды:

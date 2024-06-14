@@ -29,7 +29,7 @@ public class MessageCountServiceDefault implements MessageCountService {
         } else {
             result.forEach(element ->
                     cachedUsers.put(
-                            String.valueOf(element.getIdChatTelegram()),
+                            String.valueOf(element.getUserId()),
                             element
                     )
             );
@@ -39,8 +39,8 @@ public class MessageCountServiceDefault implements MessageCountService {
     }
 
     @Override
-    public Long amountOfMessages(long idChatTelegram) {
-        MessageCountEntity user = cachedUsers.get(String.valueOf(idChatTelegram));
+    public Long amountOfMessages(long userId) {
+        MessageCountEntity user = cachedUsers.get(String.valueOf(userId));
         if (user == null) {
             return null;
         }
@@ -48,19 +48,19 @@ public class MessageCountServiceDefault implements MessageCountService {
     }
 
     @Override
-    public void saveNewMember(long idChatTelegram) {
+    public void saveNewMember(long userId) {
         MessageCountEntity user = new MessageCountEntity(
-                idChatTelegram,
+                userId,
                 1
         );
-        cachedUsers.put(String.valueOf(idChatTelegram), user);
+        cachedUsers.put(String.valueOf(userId), user);
     }
 
     @Override
-    public void updateAmount(long idChatTelegram) {
-        MessageCountEntity user = cachedUsers.get(String.valueOf(idChatTelegram));
+    public void updateAmount(long userId) {
+        MessageCountEntity user = cachedUsers.get(String.valueOf(userId));
         user.setCounter(user.getCounter() + 1);
-        cachedUsers.put(String.valueOf(idChatTelegram), user);
+        cachedUsers.put(String.valueOf(userId), user);
     }
 
     @Scheduled(fixedDelay = 30 * 60 * 1000) //every 30m

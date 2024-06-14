@@ -19,8 +19,9 @@ public final class Commands {
     }};
 
     private static final List<BotCommand> ownerCommands = new ArrayList<>() {{
-        add(new BotCommand(AddAdminCommand.NAME, "Добавить админа"));
         add(new BotCommand(SaveNewBanwordsCommand.NAME, "Пополнить словарь"));
+        add(new BotCommand(AddAdminCommand.NAME, "Добавить админа"));
+        add(new BotCommand(RemoveAdminCommand.NAME, "Удалить админа"));
         add(new BotCommand(SearchSettingsCommand.NAME, "Настройки поиска"));
     }};
 
