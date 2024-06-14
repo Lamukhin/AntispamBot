@@ -18,6 +18,7 @@ import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 import java.util.Collections;
 import java.util.List;
 
+import static com.lamukhin.AntispamBot.util.ResponseMessage.ADMIN_REMOVED;
 import static com.lamukhin.AntispamBot.util.ResponseMessage.LIST_OF_ADMINS;
 
 @Component
@@ -67,7 +68,20 @@ public class RemoveAdminCommand {
         String enteredId = context.getUpdate().getMessage().getText().trim();
         try {
             adminService.removeAdminRights(Long.parseLong(enteredId));
-            дописать эту логику
+            String removedFullName = adminService.findByUserId(Long.parseLong(enteredId)).getFullName();
+            MessageOperations.sendNewMessage(
+                    chatId,
+                    String.format(ADMIN_REMOVED, removedFullName),
+                    null,
+                    engine
+            );
+        } catch (Exception ex) {
+            MessageOperations.sendNewMessage(
+                    chatId,
+                    "Что-то пошло не так, проверьте введённые данные.",
+                    null,
+                    engine
+            );
         }
     }
 

@@ -3,6 +3,7 @@ package com.lamukhin.AntispamBot.command;
 import com.lamukhin.AntispamBot.service.interfaces.AdminService;
 import com.lamukhin.AntispamBot.service.interfaces.MetadataService;
 import com.lamukhin.AntispamBot.service.interfaces.TextService;
+import com.lamukhin.AntispamBot.util.TextFiltrationProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -35,7 +36,7 @@ public class BanCommand {
             long spammerId = update.getMessage().getReplyToMessage().getFrom().getId();
             if (adminService.findByUserId(userId) == null) {
                 String spamMessage = update.getMessage().getReplyToMessage().getText();
-                String[] wordsOfMessage = textService.invokeWordsFromRawMessage(spamMessage, null);
+                String[] wordsOfMessage = textService.invokeWordsFromRawMessage(spamMessage, TextFiltrationProps.DEFAULT);
                 textService.saveMessageIntoDictionary(wordsOfMessage);
                 var send = BanChatMember.builder()
                         .chatId(chatId)

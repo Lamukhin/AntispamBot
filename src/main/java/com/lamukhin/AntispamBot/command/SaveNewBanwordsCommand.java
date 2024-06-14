@@ -2,6 +2,7 @@ package com.lamukhin.AntispamBot.command;
 
 import com.lamukhin.AntispamBot.service.interfaces.TextService;
 import com.lamukhin.AntispamBot.util.MessageOperations;
+import com.lamukhin.AntispamBot.util.TextFiltrationProps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,7 +50,7 @@ public class SaveNewBanwordsCommand {
                                 @ParamName("chatId") Long chatId,
                                 CommandContext context) {
         String newMessage = context.getUpdate().getMessage().getText();
-        String[] words = textService.invokeWordsFromRawMessage(newMessage, null);
+        String[] words = textService.invokeWordsFromRawMessage(newMessage, TextFiltrationProps.DEFAULT);
         textService.saveMessageIntoDictionary(words);
         log.warn("New banwords has been added into the dictionary.");
         String newBanwordsSavedResponse = String.format(

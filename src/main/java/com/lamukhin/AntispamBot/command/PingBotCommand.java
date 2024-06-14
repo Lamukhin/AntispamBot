@@ -1,6 +1,7 @@
 package com.lamukhin.AntispamBot.command;
 
 import com.lamukhin.AntispamBot.db.entity.MetadataEntity;
+import com.lamukhin.AntispamBot.db.repo.DictionaryRepo;
 import com.lamukhin.AntispamBot.db.repo.MessageCountRepo;
 import com.lamukhin.AntispamBot.listener.CustomUpdateListener;
 import com.lamukhin.AntispamBot.service.interfaces.AdminService;
@@ -32,6 +33,7 @@ public class PingBotCommand {
     private final MetadataService metadataService;
     private final CustomUpdateListener customUpdateListener;
     private final AdminService adminService;
+    private final DictionaryRepo dictionaryRepo;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private final SimpleDateFormat timestampFormatter = new SimpleDateFormat("dd.MM.yyyy в HH:mm");
     private final Logger log = LoggerFactory.getLogger(PingBotCommand.class);
@@ -55,7 +57,7 @@ public class PingBotCommand {
                 botStatus, statusWord, lastSwitcherName, lastSwitchTimestamp,
                 metadataEntity.getMessagesDeleted(),
                 metadataEntity.getUsersBanned(),
-                messageCountRepo.count(),
+                dictionaryRepo.count(),
                 metadataEntity.getDateStart().format(dateFormatter)
                 );
 
@@ -93,10 +95,11 @@ public class PingBotCommand {
         return metadataEntity;
     }
 
-    public PingBotCommand(MetadataService metadataService, CustomUpdateListener customUpdateListener, MessageCountRepo messageCountRepo, AdminService adminService) {
+    public PingBotCommand(MetadataService metadataService, CustomUpdateListener customUpdateListener, MessageCountRepo messageCountRepo, AdminService adminService, DictionaryRepo dictionaryRepo) {
         this.metadataService = metadataService;
         this.customUpdateListener = customUpdateListener;
         this.messageCountRepo = messageCountRepo;
         this.adminService = adminService;
+        this.dictionaryRepo = dictionaryRepo;
     }
 }
