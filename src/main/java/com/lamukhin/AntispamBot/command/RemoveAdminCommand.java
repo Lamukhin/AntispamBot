@@ -86,10 +86,13 @@ public class RemoveAdminCommand {
     }
 
     private String buildBeautifulList(List<AdminEntity> allAdmins) {
+        log.warn("allAdmins до сортировки {}", allAdmins.toString());
         Collections.sort(allAdmins);
+        log.warn("allAdmins после сортировки {}", allAdmins.toString());
         boolean oldAdminsStarted = false;
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < allAdmins.size(); i++) {
+            log.warn("{}", allAdmins.get(i).toString());
             if((!allAdmins.get(i).isActive())&&(!oldAdminsStarted)){
                 stringBuilder.append("_______________________________");
                 stringBuilder.append("\n");

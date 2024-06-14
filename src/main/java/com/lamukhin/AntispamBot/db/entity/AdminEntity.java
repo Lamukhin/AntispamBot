@@ -64,10 +64,19 @@ public class AdminEntity implements Comparable<AdminEntity> {
     public int compareTo(@NotNull AdminEntity o) {
 
         if (this.isActive && !o.isActive) {
-            return 1;
-        } else if ((o.isActive && !this.isActive)) {
             return -1;
+        } else if ((o.isActive && !this.isActive)) {
+            return 1;
         }
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "AdminEntity{" +
+                "userId=" + userId +
+                ", isActive=" + isActive +
+                ", fullName='" + fullName + '\'' +
+                '}';
     }
 }

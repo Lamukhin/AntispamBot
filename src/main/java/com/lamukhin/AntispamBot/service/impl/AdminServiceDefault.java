@@ -39,6 +39,9 @@ public class AdminServiceDefault implements AdminService {
         if (adminEntity == null) {
             adminEntity = new AdminEntity(userId, fullName);
             adminRepo.save(adminEntity);
+        } else {
+            adminEntity.setActive(true);
+            adminRepo.save(adminEntity);
         }
     }
 
