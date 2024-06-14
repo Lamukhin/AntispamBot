@@ -5,6 +5,7 @@ import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
 import com.lamukhin.AntispamBot.service.interfaces.UpdateProcessingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
@@ -18,6 +19,8 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
     private final Logger log = LoggerFactory.getLogger(UpdateProcessingServiceDefault.class);
     private final MessageCountService messageCountService;
     private final SpamCheckingService spamCheckingService;
+    @Value("${bot_owner_tg_id}")
+    private long botOwnerId;
 
     /*
         важная пометка: тут обрабатываются сообщения только из групповых чатов.
@@ -31,6 +34,10 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
                 long userTelegramId = update.getMessage().getFrom().getId();
                 Long amount = messageCountService.amountOfMessages(userTelegramId);
 
+                //мои апдейты надо обрабатывать в группе всегда!
+                if (userTelegramId == botOwnerId) {
+                    spamCheckingService.checkUpdate(update, engine);
+                } else //а чужие уже по ситуации :)
                 if ((amount != null) && (amount >= 10)) {
                     return;
                 } else if (amount == null) {
