@@ -1,1 +1,38 @@
-##secret info
+spring:
+  application:
+    name: antispam-bot
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/antispambot
+    username: postgres
+    password: SomePassword1997
+    driver-class-name: org.postgresql.Driver
+
+
+  jooq:
+    sql-dialect: Postgres
+
+  sql:
+    init:
+      mode: always
+
+telegram:
+  bot:
+    username: "chatgroup_defender_bot"
+    token: "7426763199:AAFuqTKFKSSKFP5lMgZDCuMIbMg0Ymq6E2Q"
+    session:
+      enable: true
+      time-life:
+        chat: 60
+        user: 10
+
+program-agent:
+  charts:
+    bot-message: true
+  client:
+    token: "34b009a9-7dc0-46f8-a4fb-f3b141bcc2b9"
+    time-delay-send: 15000
+    host: "https://wds-program-agent.ru/api/"
+    myHost: "http://10.9.0.5:1016/api/"
+
+bot_owner_tg_id: 260113861
