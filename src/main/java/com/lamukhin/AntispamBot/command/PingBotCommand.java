@@ -45,42 +45,44 @@ public class PingBotCommand {
                          @ParamName("chatId") Long chatId,
                          @ParamName("userId") Long userId) {
 
-        MetadataEntity metadataEntity = getThisBotMetadata(engine.getBotUsername());
+        if(!(chatId.equals(userId))) {
+            MetadataEntity metadataEntity = getThisBotMetadata(engine.getBotUsername());
 
-        String botStatus = customUpdateListener.getSwitcher().isPaused() ? "НА ПАУЗЕ" : "РАБОТАЮ";
-        String statusWord = customUpdateListener.getSwitcher().isPaused() ? "выключил" : "включил";
-        String lastSwitcherName = customUpdateListener.getSwitcher().getLastSwitcherName();
-        String lastSwitchTimestamp = timestampFormatter.format(customUpdateListener.getSwitcher().getLastSwitchTimestamp());
-        //не надо вдумываться, что тут происходит. это - визуальный сахар в чате. на бизнес логику не влияет.
-        String response = String.format(
-                BOT_FULL_INFO,
-                botStatus, statusWord, lastSwitcherName, lastSwitchTimestamp,
-                metadataEntity.getMessagesDeleted(),
-                metadataEntity.getUsersBanned(),
-                dictionaryRepo.count(),
-                metadataEntity.getDateStart().format(dateFormatter)
-                );
+            String botStatus = customUpdateListener.getSwitcher().isPaused() ? "НА ПАУЗЕ" : "РАБОТАЮ";
+            String statusWord = customUpdateListener.getSwitcher().isPaused() ? "выключил" : "включил";
+            String lastSwitcherName = customUpdateListener.getSwitcher().getLastSwitcherName();
+            String lastSwitchTimestamp = timestampFormatter.format(customUpdateListener.getSwitcher().getLastSwitchTimestamp());
+            //не надо вдумываться, что тут происходит. это - визуальный сахар в чате. на бизнес логику не влияет.
+            String response = String.format(
+                    BOT_FULL_INFO,
+                    botStatus, statusWord, lastSwitcherName, lastSwitchTimestamp,
+                    metadataEntity.getMessagesDeleted(),
+                    metadataEntity.getUsersBanned(),
+                    dictionaryRepo.count(),
+                    metadataEntity.getDateStart().format(dateFormatter)
+            );
 
         /*
             Стараюсь придерживаться правила: в каждом публичном методе в "командах" оставлять
             отправку сообщения, чтобы легко было понять, что получили и что тут же вернули.
         */
-        //an admin or an owner :) can call this command at any time
-        if ((adminService.hasAdminStatusByUserId(userId)) || (userId.equals(botOwnerId))) {
-            MessageOperations.sendNewMessage(
-                    chatId,
-                    response,
-                    ParseMode.MARKDOWN,
-                    engine);
-        } else
-        //but a default user don't have to flood
-            if (System.currentTimeMillis() - lastHelloTime >= 600000) { //once in 10 mins
-            MessageOperations.sendNewMessage(
-                    chatId,
-                    response,
-                    ParseMode.MARKDOWN,
-                    engine);
-            lastHelloTime = System.currentTimeMillis();
+            //an admin or an owner :) can call this command at any time
+            if ((adminService.hasAdminStatusByUserId(userId)) || (userId.equals(botOwnerId))) {
+                MessageOperations.sendNewMessage(
+                        chatId,
+                        response,
+                        ParseMode.MARKDOWN,
+                        engine);
+            } else
+                //but a default user don't have to flood
+                if (System.currentTimeMillis() - lastHelloTime >= 600000) { //once in 10 mins
+                    MessageOperations.sendNewMessage(
+                            chatId,
+                            response,
+                            ParseMode.MARKDOWN,
+                            engine);
+                    lastHelloTime = System.currentTimeMillis();
+                }
         }
     }
 

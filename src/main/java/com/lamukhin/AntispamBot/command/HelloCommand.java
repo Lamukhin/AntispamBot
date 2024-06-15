@@ -8,15 +8,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
+import org.telegram.telegrambots.meta.api.methods.send.SendAnimation;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
 import ru.wdeath.managerbot.lib.bot.annotations.ParamName;
+import ru.wdeath.managerbot.lib.bot.callback.CallbackData;
+import ru.wdeath.managerbot.lib.bot.callback.CallbackDataSender;
 import ru.wdeath.managerbot.lib.bot.command.CommandContext;
 import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
+import ru.wdeath.managerbot.lib.util.KeyboardUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +55,7 @@ public class HelloCommand {
                     )
             );
             String userFirstName = context.getUpdate().getMessage().getFrom().getFirstName();
+
             MessageOperations.sendNewMessage(
                     chatId,
                     String.format(HELLO, userFirstName),

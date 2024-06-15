@@ -9,10 +9,11 @@ import java.util.List;
 public final class Commands {
 
     private static final List<BotCommand> defaultUserCommands = new ArrayList<>() {{
-        add(new BotCommand(PingBotCommand.NAME, "Статус бота"));
+        add(new BotCommand(HelloCommand.NAME, "Приветственная команда"));
     }};
 
     private static final List<BotCommand> adminCommands = new ArrayList<>() {{
+        add(new BotCommand(PingBotCommand.NAME, "Статус бота"));
         add(new BotCommand(StopBotCommand.NAME, "Приостановить работу бота"));
         add(new BotCommand(StartBotCommand.NAME, "Возобновить работу бота"));
         add(new BotCommand(MyStatusCommand.NAME, "Ваш статус"));
