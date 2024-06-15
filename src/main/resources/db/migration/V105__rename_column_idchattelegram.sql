@@ -1,0 +1,1 @@
+ALTER TABLE message_count RENAME COLUMN id_chat_telegram TO user_telegram_id;

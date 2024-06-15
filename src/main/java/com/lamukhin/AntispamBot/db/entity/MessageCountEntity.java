@@ -11,7 +11,7 @@ public final class MessageCountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    @Column(name="id_chat_telegram")
+    @Column(name="user_telegram_id")
     private long userId;
     @Column(name="counter")
     private long counter;

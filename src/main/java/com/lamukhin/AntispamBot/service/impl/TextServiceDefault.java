@@ -44,6 +44,7 @@ public class TextServiceDefault implements TextService {
         incomeMessage = incomeMessage
                 .toLowerCase()
                 .replaceAll("\\n", " ")
+                .replaceAll("\\p{Punct}", " ")
                 .replaceAll("[\\p{So}\\p{Cn}]", "emoji")
                 .trim();
         switch (textFiltrationProps) { // switch более наглядный, если в будущем фильтров прибавится
