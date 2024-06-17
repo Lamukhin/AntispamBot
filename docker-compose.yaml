@@ -6,7 +6,7 @@ services:
     build: ./
     restart: always
     ports:
-      - '8081:8080'
+      - '8080:8080'
     depends_on:
       - db
 
@@ -16,8 +16,8 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: SomePassword1997
-      POSTGRES_DS: postgres
+      POSTGRES_DB: antispambot
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     ports:
-      - '5435:5432'
+      - '5432:5432'

@@ -3,11 +3,10 @@ spring:
     name: antispam-bot
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/antispambot
+    url: jdbc:postgresql://db:5432/antispambot
     username: postgres
     password: SomePassword1997
     driver-class-name: org.postgresql.Driver
-
 
   jooq:
     sql-dialect: Postgres
