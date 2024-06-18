@@ -123,7 +123,6 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
         return tasks;
     }
 
-    // yes, im bad at math
     private int isSpam(double coefOfAllMessage, int amountOfWords) {
         if (searchSettings.getSegmentForShort().isInSegment(amountOfWords)) {
             return Double.compare(coefOfAllMessage, searchSettings.getCoefForShortMessage());

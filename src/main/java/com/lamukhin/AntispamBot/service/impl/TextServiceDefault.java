@@ -14,6 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*
+    This service works with texts. It transforms income messages into words
+    and sync with dictionary.
+ */
+
 @Service
 public class TextServiceDefault implements TextService {
 

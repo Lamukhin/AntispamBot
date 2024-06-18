@@ -1,6 +1,5 @@
 package com.lamukhin.AntispamBot.service.impl;
 
-import com.lamukhin.AntispamBot.command.SaveNewBanwordsCommand;
 import com.lamukhin.AntispamBot.db.entity.MetadataEntity;
 import com.lamukhin.AntispamBot.db.repo.MetadataRepo;
 import com.lamukhin.AntispamBot.service.interfaces.MetadataService;

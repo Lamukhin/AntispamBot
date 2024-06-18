@@ -42,17 +42,15 @@ public class Search implements Callable<Integer> {
                         continue;
                     }
                     double coefOfCurrentWord = twoWordsCrossesCoef(currentWord, wordInDictionary);
-                    //log.warn("Coefficient of the current words: {} : \"{}\" and \"{}\"", coefOfCurrentWord, currentWord, wordInDictionary);
 
                     if (Double.compare(coefOfCurrentWord, searchSettings.getCoefForCurrentWord()) == 1) {
                         //if a found word EXISTS in our dictionary, we return its value.
                         // otherwise we return just 1, which means that found similar word
-                        log.warn("Final coef of the current words: {} : \"{}\" and \"{}\"", coefOfCurrentWord, currentWord, wordInDictionary);
+                        log.warn("The final coef of the current words: {} : \"{}\" and \"{}\"", coefOfCurrentWord, currentWord, wordInDictionary);
                         return Double.compare(coefOfCurrentWord, 1.0) == 0 ? wordDictionary.get(wordInDictionary).getValue() : 1;
                     }
                 }
             }
-            //log.warn("The word \"{}\" has not found in our dictionary", currentWord);
             return 0;
         } catch (Exception ex) {
             log.error("Exception inside CALL method: {}", ex.getMessage());
@@ -71,7 +69,6 @@ public class Search implements Callable<Integer> {
                 int amountAtDictionary = countItem(wordInDictionary.toCharArray(), currentCharInWord);
                 int minCount = Math.min(amountAtWord, amountAtDictionary);
                 for (int i = 0; i < minCount; i++) {
-                    //log.warn("Matched \'{}\' has found in word \"{}\"", currentCharInWord, currentWord);
                     crosses.add(currentCharInWord);
                     inWordCrossesCounter++;
                 }

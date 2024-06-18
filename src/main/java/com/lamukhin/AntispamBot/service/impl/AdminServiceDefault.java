@@ -19,13 +19,11 @@ public class AdminServiceDefault implements AdminService {
             return adminEntity.isActive();
         }
         return false;
-        //throw new RuntimeException(String.format("There is no Admin in database with ID %d", userId));
     }
 
     @Override
     public AdminEntity findByUserId(Long userId) {
         return adminRepo.findByUserId(userId);
-        //throw new RuntimeException(String.format("There is no Admin in database with ID %d", userId));
     }
 
     @Override
@@ -52,7 +50,6 @@ public class AdminServiceDefault implements AdminService {
             adminEntity.setActive(false);
             adminRepo.save(adminEntity);
         }
-        //throw new RuntimeException(String.format("There is no Admin in database with ID %d", userId));
     }
 
     @Override
@@ -62,7 +59,6 @@ public class AdminServiceDefault implements AdminService {
             adminEntity.setActive(true);
             adminRepo.save(adminEntity);
         }
-        //throw new RuntimeException(String.format("There is no Admin in database with ID %d", userId));
     }
 
     public AdminServiceDefault(AdminRepo adminRepo) {

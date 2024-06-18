@@ -10,7 +10,6 @@ import ru.wdeath.managerbot.lib.bot.interfaces.HandlerBotUpdate;
 
 /*
     This is a root component of all application.
-    Every group chat message processing starts here.
  */
 
 @Component

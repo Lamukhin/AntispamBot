@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 /*
-    Root service of the application. "processUpdate()" method processes an every income message.
+    Root service of the application. "processGroupChatUpdate()" method processes
+    an every income message from a group chat. Private messages are processed by
+    AntispamBot/libs/wds-program-agent-telegram-bot-lib
  */
 
 @Service
@@ -22,10 +24,6 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
     @Value("${bot_owner_tg_id}")
     private long botOwnerId;
 
-    /*
-        важная пометка: тут обрабатываются сообщения только из групповых чатов.
-        личные сообщения обрабатываются либой wdeath
-    */
     @Override
     public void processGroupChatUpdate(TelegramLongPollingEngine engine, Update update) {
         //TODO: внедрить jooq. пока не вышло, так как проблема с плагином. использую jpa
@@ -34,11 +32,10 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
                 long userTelegramId = update.getMessage().getFrom().getId();
                 Long amount = messageCountService.amountOfMessages(userTelegramId);
 
-                //мои апдейты надо обрабатывать в группе всегда!
                 if (userTelegramId == botOwnerId) {
                     spamCheckingService.checkUpdate(update, engine);
-                } else //а чужие уже по ситуации :)
-                if ((amount != null) && (amount >= 10)) {
+                } else
+                if ((amount != null) && (amount >= 5)) {
                     return;
                 } else if (amount == null) {
                     messageCountService.saveNewMember(userTelegramId);
