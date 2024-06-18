@@ -3,9 +3,9 @@ spring:
     name: antispam-bot
 
   datasource:
-    url: jdbc:postgresql://db:5432/antispambot
-    username: postgres
-    password: SomePassword1997
+    url: jdbc:postgresql://${datasource_url}/${datasource_database_name}
+    username: ${datasource_username}
+    password: ${datasource_password}
     driver-class-name: org.postgresql.Driver
 
   jooq:
@@ -17,8 +17,8 @@ spring:
 
 telegram:
   bot:
-    username: "chatgroup_defender_bot"
-    token: "7426763199:AAFuqTKFKSSKFP5lMgZDCuMIbMg0Ymq6E2Q"
+    username: "${telegram_bot_username}"
+    token: "${telegram_bot_token}"
     session:
       enable: true
       time-life:
@@ -29,9 +29,9 @@ program-agent:
   charts:
     bot-message: true
   client:
-    token: "34b009a9-7dc0-46f8-a4fb-f3b141bcc2b9"
+    token: "${program_agent_client_token}"
     time-delay-send: 15000
     host: "https://wds-program-agent.ru/api/"
-    myHost: "http://10.9.0.5:1016/api/"
+    myHost: "${program_agent_client_my_host}"
 
 bot_owner_tg_id: 260113861

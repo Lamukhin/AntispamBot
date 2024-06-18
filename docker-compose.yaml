@@ -1,23 +1,32 @@
-version: '3.0'
+  version: '3.0'
 
-services:
+  services:
 
-  antispam-bot:
-    build: ./
-    restart: always
-    ports:
-      - '8080:8080'
-    depends_on:
-      - db
+    antispam-bot:
+      build: ./
+      restart: always
+      ports:
+        - '8080:8080'
+      depends_on:
+        - db
+      environment:
+        datasource_url: ${datasource_url}
+        datasource_database_name: ${datasource_database_name}
+        datasource_username: ${datasource_username}
+        datasource_password: ${datasource_password}
+        telegram_bot_username: ${telegram_bot_username}
+        telegram_bot_token: ${telegram_bot_token}
+        program_agent_client_token: ${program_agent_client_token}
+        program_agent_client_my_host: ${program_agent_client_my_host}
 
-  db:
-    restart: always
-    image: postgres:12
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: SomePassword1997
-      POSTGRES_DB: antispambot
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
+    db:
+      restart: always
+      image: postgres:12
+      environment:
+        POSTGRES_USER: ${datasource_username}
+        POSTGRES_PASSWORD: ${datasource_password}
+        POSTGRES_DB: ${datasource_database_name}
+      volumes:
+        - ./pgdata:/var/lib/postgresql/data
+      ports:
+        - '5432:5432'
