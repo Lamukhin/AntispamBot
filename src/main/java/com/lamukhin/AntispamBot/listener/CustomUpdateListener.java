@@ -8,10 +8,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.interfaces.HandlerBotUpdate;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
 /*
     This is a root component of all application.
     Every group chat message processing starts here.
@@ -28,7 +24,7 @@ public class CustomUpdateListener implements HandlerBotUpdate {
     @Override
     public void update(TelegramLongPollingEngine engine, Update update) {
         log.warn("Processing update with a custom listener!");
-        if(!switcher.isPaused()) {
+        if (!switcher.isPaused()) {
             try {
                 updateProcessingService.processGroupChatUpdate(engine, update);
             } catch (Exception ex) {
@@ -49,21 +45,21 @@ public class CustomUpdateListener implements HandlerBotUpdate {
         private String lastSwitcherName;
         private long lastSwitchTimestamp;
 
-        public Switcher (boolean paused){
+        public Switcher(boolean paused) {
             this.paused = paused;
             this.lastSwitcherName = "sunshine";
-            ZoneId zoneId = ZoneId.of("Europe/Moscow");
-            ZonedDateTime zonedDateTime = ZonedDateTime.now(zoneId);
-            this.lastSwitchTimestamp = zonedDateTime.toInstant().toEpochMilli();
+            this.lastSwitchTimestamp = System.currentTimeMillis() + 3 * 60 * 60 * 1000;
         }
 
         //не уверен, что ТГ обрабатывает многопоточно запросы, но лучше перестраховаться
         public synchronized void setPaused(boolean paused) {
             this.paused = paused;
         }
+
         public synchronized void setLastSwitcherName(String lastSwitcherName) {
             this.lastSwitcherName = lastSwitcherName;
         }
+
         public synchronized void setLastSwitchTimestamp(long lastSwitchTimestamp) {
             this.lastSwitchTimestamp = lastSwitchTimestamp;
         }
@@ -71,9 +67,11 @@ public class CustomUpdateListener implements HandlerBotUpdate {
         public boolean isPaused() {
             return paused;
         }
+
         public long getLastSwitchTimestamp() {
             return lastSwitchTimestamp;
         }
+
         public String getLastSwitcherName() {
             return lastSwitcherName;
         }

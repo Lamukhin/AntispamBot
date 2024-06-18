@@ -37,9 +37,7 @@ public class StopBotCommand {
                 String switcherName = invokeFullNameFromUpdate(update);
                 customUpdateListener.getSwitcher().setPaused(true);
                 customUpdateListener.getSwitcher().setLastSwitcherName(switcherName);
-                ZoneId zoneId = ZoneId.of("Europe/Moscow");
-                ZonedDateTime zonedDateTime = ZonedDateTime.now(zoneId);
-                customUpdateListener.getSwitcher().setLastSwitchTimestamp(zonedDateTime.toInstant().toEpochMilli());
+                customUpdateListener.getSwitcher().setLastSwitchTimestamp(System.currentTimeMillis()+ 3 * 60 * 60 * 1000);
                 MessageOperations.sendNewMessage(
                         chatId,
                         "Бот приостановлен.",
