@@ -6,6 +6,7 @@ import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.User;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
@@ -34,7 +35,7 @@ public class StopBotCommand {
         if ((adminService.hasAdminStatusByUserId(userId))||(userId.equals(botOwnerId))) {
             if (!(customUpdateListener.getSwitcher().isPaused())) {
 
-                String switcherName = invokeFullNameFromUpdate(update);
+                String switcherName = invokeFullNameFromUser(update.getMessage().getFrom());
                 customUpdateListener.getSwitcher().setPaused(true);
                 customUpdateListener.getSwitcher().setLastSwitcherName(switcherName);
                 customUpdateListener.getSwitcher().setLastSwitchTimestamp(System.currentTimeMillis()+ 3 * 60 * 60 * 1000);
@@ -57,10 +58,10 @@ public class StopBotCommand {
 
     // TODO: если обслуживающих методов наберется несколько,
     //  вынести в отдельный сервис
-    private String invokeFullNameFromUpdate(Update update) {
+    private String invokeFullNameFromUser(User forwardedUser) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(update.getMessage().getFrom().getFirstName());
-        String lastName = update.getMessage().getFrom().getLastName();
+        stringBuilder.append(forwardedUser.getFirstName());
+        String lastName = forwardedUser.getLastName();
         if (lastName != null) {
             stringBuilder.append(" ");
             stringBuilder.append(lastName);

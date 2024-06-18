@@ -3,9 +3,9 @@ spring:
     name: antispam-bot
 
   datasource:
-    url: jdbc:postgresql://${datasource_url}/${datasource_database_name}
-    username: ${datasource_username}
-    password: ${datasource_password}
+    url: jdbc:postgresql://localhost:5432/antispambot
+    username: topuser
+    password: SomePassword1997
     driver-class-name: org.postgresql.Driver
 
   jooq:
@@ -17,8 +17,8 @@ spring:
 
 telegram:
   bot:
-    username: "${telegram_bot_username}"
-    token: "${telegram_bot_token}"
+    username: "for_command_test_demo_bot_bot"
+    token: "6301409920:AAGgdMIdCDAHaUipawyLVgVKj0nD3Ie_dAQ"
     session:
       enable: true
       time-life:

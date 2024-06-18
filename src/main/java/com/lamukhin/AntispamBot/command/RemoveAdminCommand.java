@@ -18,8 +18,7 @@ import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 import java.util.Collections;
 import java.util.List;
 
-import static com.lamukhin.AntispamBot.util.ResponseMessage.ADMIN_REMOVED;
-import static com.lamukhin.AntispamBot.util.ResponseMessage.LIST_OF_ADMINS;
+import static com.lamukhin.AntispamBot.util.ResponseMessage.*;
 
 @Component
 @CommandNames(value = RemoveAdminCommand.NAME, type = TypeCommand.MESSAGE)
@@ -78,7 +77,7 @@ public class RemoveAdminCommand {
         } catch (Exception ex) {
             MessageOperations.sendNewMessage(
                     chatId,
-                    "Что-то пошло не так, проверьте введённые данные.",
+                    ERROR_PROCESSING_MESSAGE,
                     null,
                     engine
             );

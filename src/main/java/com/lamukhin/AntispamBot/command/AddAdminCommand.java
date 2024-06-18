@@ -15,8 +15,7 @@ import ru.wdeath.managerbot.lib.bot.annotations.ParamName;
 import ru.wdeath.managerbot.lib.bot.command.CommandContext;
 import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 
-import static com.lamukhin.AntispamBot.util.ResponseMessage.SAVED_NEW_ADMIN;
-import static com.lamukhin.AntispamBot.util.ResponseMessage.SEND_NEW_CANDIDATE;
+import static com.lamukhin.AntispamBot.util.ResponseMessage.*;
 
 @Component
 @CommandNames(value = AddAdminCommand.NAME, type = TypeCommand.MESSAGE)
@@ -53,7 +52,6 @@ public class AddAdminCommand {
         User forwardedUser = context.getUpdate().getMessage().getForwardFrom();
         long id;
         String fullName;
-        //TODO: по-хорошему, все бы CommandOther надо обернуть в try-catch, но не сегодня
         try {
             if (forwardedUser != null) {
                 id = forwardedUser.getId();
@@ -74,7 +72,7 @@ public class AddAdminCommand {
         } catch (Exception ex) {
             MessageOperations.sendNewMessage(
                     chatId,
-                    "Что-то пошло не так. Проверьте корректность введённых данных.",
+                    ERROR_ADDING_ADMIN,
                     null,
                     engine
             );

@@ -51,7 +51,6 @@ public class CustomUpdateListener implements HandlerBotUpdate {
             this.lastSwitchTimestamp = System.currentTimeMillis() + 3 * 60 * 60 * 1000;
         }
 
-        //не уверен, что ТГ обрабатывает многопоточно запросы, но лучше перестраховаться
         public synchronized void setPaused(boolean paused) {
             this.paused = paused;
         }

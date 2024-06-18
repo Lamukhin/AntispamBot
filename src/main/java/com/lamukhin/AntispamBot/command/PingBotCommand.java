@@ -61,10 +61,6 @@ public class PingBotCommand {
                     metadataEntity.getDateStart().format(dateFormatter)
             );
 
-        /*
-            Стараюсь придерживаться правила: в каждом публичном методе в "командах" оставлять
-            отправку сообщения, чтобы легко было понять, что получили и что тут же вернули.
-        */
             //an admin or an owner :) can call this command at any time
             if ((adminService.hasAdminStatusByUserId(userId)) || (userId.equals(botOwnerId))) {
                 MessageOperations.sendNewMessage(

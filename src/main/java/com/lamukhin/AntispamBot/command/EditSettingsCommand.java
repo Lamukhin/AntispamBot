@@ -16,8 +16,6 @@ import ru.wdeath.managerbot.lib.bot.command.CommandContext;
 import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 import ru.wdeath.managerbot.lib.bot.session.UserBotSession;
 
-import java.util.Arrays;
-
 import static com.lamukhin.AntispamBot.util.ResponseMessage.*;
 
 @Component
@@ -97,9 +95,21 @@ public class EditSettingsCommand {
             UserBotSession userBotSession,
             CommandContext context) {
 
-        String newMessage = context.getUpdate().getMessage().getText();
-        String[] values = newMessage.split(" ");
-        Arrays.asList(values).forEach(System.out::println);
+        String newMessage;
+        String[] values;
+        try {
+            newMessage = context.getUpdate().getMessage().getText();
+            values = newMessage.split(" ");
+        } catch (Exception ex) {
+            MessageOperations.sendNewMessage(
+                    chatId,
+                    ERROR_PROCESSING_MESSAGE,
+                    null,
+                    engine
+            );
+            return;
+        }
+
         switch ((String) userBotSession.getData()) {
             case "short" -> {
                 searchSettings.getSegmentForShort().setStart(Integer.parseInt(values[0]));

@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
 import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
@@ -18,8 +17,7 @@ import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 
 import java.util.Arrays;
 
-import static com.lamukhin.AntispamBot.util.ResponseMessage.NEW_WORDS_SAVED;
-import static com.lamukhin.AntispamBot.util.ResponseMessage.SEND_WORDS_TO_SAVE;
+import static com.lamukhin.AntispamBot.util.ResponseMessage.*;
 
 @Component
 @CommandNames(value = SaveNewBanwordsCommand.NAME, type = TypeCommand.MESSAGE)
@@ -49,10 +47,22 @@ public class SaveNewBanwordsCommand {
     public void saveNewBanwords(TelegramLongPollingEngine engine,
                                 @ParamName("chatId") Long chatId,
                                 CommandContext context) {
-        String newMessage = context.getUpdate().getMessage().getText();
-        String[] words = textService.invokeWordsFromRawMessage(newMessage, TextFiltrationProps.DEFAULT);
+        String newMessage;
+        String[] words;
+        try {
+            newMessage = context.getUpdate().getMessage().getText();
+            words = textService.invokeWordsFromRawMessage(newMessage, TextFiltrationProps.DEFAULT);
+        } catch (Exception ex) {
+            MessageOperations.sendNewMessage(
+                    chatId,
+                    ERROR_PROCESSING_MESSAGE,
+                    null,
+                    engine
+            );
+            return;
+        }
+
         textService.saveMessageIntoDictionary(words);
-        log.warn("New banwords has been added into the dictionary.");
         String newBanwordsSavedResponse = String.format(
                 NEW_WORDS_SAVED,
                 toBeautifulString(words),
@@ -64,6 +74,7 @@ public class SaveNewBanwordsCommand {
                 null,
                 engine
         );
+        log.warn("New banwords has been added into the dictionary.");
     }
 
     private String toBeautifulString(String[] words) {

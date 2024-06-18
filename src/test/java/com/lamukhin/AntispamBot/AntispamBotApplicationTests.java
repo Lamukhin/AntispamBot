@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,8 @@ class AntispamBotApplicationTests {
 
 	@Test
 	void contextLoads() {
-		System.out.println(createListOfCommands(botOwnerId));
+		System.out.println(System.currentTimeMillis()+ 3 * 60 * 60 * 1000);
+		//System.out.println(createListOfCommands(botOwnerId));
 	}
 
 	private List<BotCommand> createListOfCommands(Long userId) {

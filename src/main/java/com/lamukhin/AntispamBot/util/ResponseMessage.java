@@ -38,6 +38,8 @@ public final class ResponseMessage {
     public static final String SEND_NEW_CANDIDATE = "Отправьте сообщение от кандидата в админы или его userId и имя через пробел";
     public static final String LIST_OF_ADMINS = "Список админов группы:\n%s\nСкопируйте и отправьте ID человека, которого хотите исключить из админов.";
     public static final String ADMIN_REMOVED = "У \'%s\' больше нет прав администратора.";
+    public static final String ERROR_ADDING_ADMIN = "Что-то пошло не так. Возможно, настройки приватности пользователя не позволяют получить ID через пересланное сообщение.";
+    public static final String ERROR_PROCESSING_MESSAGE = "Что-то пошло не так. Проверьте корректность ответа и попробуйте снова.";
     public static final String YOUR_STATUS = """
             Ваш статус \"Администратор\" *%sактивен*.
             Доступные команды:

@@ -47,7 +47,7 @@ public class TextServiceDefault implements TextService {
                 .replaceAll("\\p{Punct}", " ")
                 .replaceAll("[\\p{So}\\p{Cn}]", "emoji")
                 .trim();
-        switch (textFiltrationProps) { // switch более наглядный, если в будущем фильтров прибавится
+        switch (textFiltrationProps) {
             case NO_SHORTS -> {
                 return Arrays
                         .stream(incomeMessage.split(" "))
