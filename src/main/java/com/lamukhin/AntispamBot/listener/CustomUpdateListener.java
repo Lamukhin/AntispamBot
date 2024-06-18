@@ -9,6 +9,8 @@ import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 import ru.wdeath.managerbot.lib.bot.interfaces.HandlerBotUpdate;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 /*
     This is a root component of all application.
@@ -50,7 +52,9 @@ public class CustomUpdateListener implements HandlerBotUpdate {
         public Switcher (boolean paused){
             this.paused = paused;
             this.lastSwitcherName = "sunshine";
-            this.lastSwitchTimestamp = System.currentTimeMillis();
+            ZoneId zoneId = ZoneId.of("Europe/Moscow");
+            ZonedDateTime zonedDateTime = ZonedDateTime.now(zoneId);
+            this.lastSwitchTimestamp = zonedDateTime.toInstant().toEpochMilli();
         }
 
         //не уверен, что ТГ обрабатывает многопоточно запросы, но лучше перестраховаться

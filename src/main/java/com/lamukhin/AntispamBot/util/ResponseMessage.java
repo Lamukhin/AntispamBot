@@ -3,7 +3,7 @@ package com.lamukhin.AntispamBot.util;
 public final class ResponseMessage {
     public static final String BOT_FULL_INFO = """
             Привет! Я бот-защитник от криптоспама.
-            Статус: *%s* (%s %s %s)
+            Статус: *%s* (%s %s %s по МСК)
             Админ, пиши `!spam` ответом на сообщение спамера, если я его не заметил.
             Удалено сообщений: %s
             Забанено спамеров: %s

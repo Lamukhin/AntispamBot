@@ -52,7 +52,6 @@ public class PingBotCommand {
             String statusWord = customUpdateListener.getSwitcher().isPaused() ? "выключил" : "включил";
             String lastSwitcherName = customUpdateListener.getSwitcher().getLastSwitcherName();
             String lastSwitchTimestamp = timestampFormatter.format(customUpdateListener.getSwitcher().getLastSwitchTimestamp());
-            //не надо вдумываться, что тут происходит. это - визуальный сахар в чате. на бизнес логику не влияет.
             String response = String.format(
                     BOT_FULL_INFO,
                     botStatus, statusWord, lastSwitcherName, lastSwitchTimestamp,

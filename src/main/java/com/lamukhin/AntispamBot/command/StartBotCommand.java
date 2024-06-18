@@ -11,6 +11,9 @@ import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
 import ru.wdeath.managerbot.lib.bot.annotations.ParamName;
 import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+
 @Component
 @CommandNames(value = StartBotCommand.NAME, type = TypeCommand.MESSAGE)
 public class StartBotCommand {
@@ -30,7 +33,9 @@ public class StartBotCommand {
                 String switcherName = invokeFullNameFromUpdate(update);
                 customUpdateListener.getSwitcher().setPaused(false);
                 customUpdateListener.getSwitcher().setLastSwitcherName(switcherName);
-                customUpdateListener.getSwitcher().setLastSwitchTimestamp(System.currentTimeMillis());
+                ZoneId zoneId = ZoneId.of("Europe/Moscow");
+                ZonedDateTime zonedDateTime = ZonedDateTime.now(zoneId);
+                customUpdateListener.getSwitcher().setLastSwitchTimestamp(zonedDateTime.toInstant().toEpochMilli());
                 MessageOperations.sendNewMessage(
                         chatId,
                         "Бот запущен",
