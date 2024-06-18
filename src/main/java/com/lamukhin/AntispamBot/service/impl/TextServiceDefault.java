@@ -75,6 +75,7 @@ public class TextServiceDefault implements TextService {
                     DictionaryEntity currentNewWord = new DictionaryEntity(word, 1);
                     if (cachedDictionary.putIfAbsent(word, currentNewWord) == null) {
                         dictionaryRepo.save(currentNewWord);
+                        cachedDictionary.put(word, currentNewWord);
                     }
                 });
         log.warn("The dictionary has been updated");
