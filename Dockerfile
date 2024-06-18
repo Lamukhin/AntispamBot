@@ -4,10 +4,10 @@ WORKDIR /workspace/app
 
 COPY build.gradle settings.gradle gradlew ./
 COPY gradle/ gradle/
-RUN ./gradlew --version
+RUN chmod +x ./gradlew --version
 
 COPY . .
-RUN chmod +x /workspace/app/gradlew clean build -x test
+RUN chmod +x ./gradlew clean build -x test
 
 FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /workspace/app
