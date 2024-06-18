@@ -1,6 +1,7 @@
 package com.lamukhin.AntispamBot.command;
 
 import com.lamukhin.AntispamBot.service.interfaces.AdminService;
+import com.lamukhin.AntispamBot.util.CommandOperations;
 import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,7 @@ public class AddAdminCommand {
         try {
             if (forwardedUser != null) {
                 id = forwardedUser.getId();
-                fullName = invokeFullNameFromUser(forwardedUser);
+                fullName = CommandOperations.invokeFullNameFromUser(forwardedUser);
             } else {
                 String manuallyEnteredData = context.getUpdate().getMessage().getText().trim();
                 String[] idAndName = manuallyEnteredData.split(" ", 2);
@@ -78,19 +79,6 @@ public class AddAdminCommand {
             );
         }
 
-    }
-
-    // TODO: если обслуживающих методов наберется несколько,
-    //  вынести в отдельный сервис
-    private String invokeFullNameFromUser(User forwardedUser) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(forwardedUser.getFirstName());
-        String lastName = forwardedUser.getLastName();
-        if (lastName != null) {
-            stringBuilder.append(" ");
-            stringBuilder.append(lastName);
-        }
-        return stringBuilder.toString();
     }
 
     public AddAdminCommand(AdminService adminService) {

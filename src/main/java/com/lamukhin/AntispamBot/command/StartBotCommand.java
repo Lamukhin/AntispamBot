@@ -2,6 +2,7 @@ package com.lamukhin.AntispamBot.command;
 
 import com.lamukhin.AntispamBot.listener.CustomUpdateListener;
 import com.lamukhin.AntispamBot.service.interfaces.AdminService;
+import com.lamukhin.AntispamBot.util.CommandOperations;
 import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -30,7 +31,7 @@ public class StartBotCommand {
 
         if (adminService.hasAdminStatusByUserId(userId)) {
             if (customUpdateListener.getSwitcher().isPaused()) {
-                String switcherName = invokeFullNameFromUpdate(update);
+                String switcherName = CommandOperations.invokeFullNameFromUser(update.getMessage().getFrom());
                 customUpdateListener.getSwitcher().setPaused(false);
                 customUpdateListener.getSwitcher().setLastSwitcherName(switcherName);
                 customUpdateListener.getSwitcher().setLastSwitchTimestamp(System.currentTimeMillis()+ 3 * 60 * 60 * 1000);
@@ -50,19 +51,6 @@ public class StartBotCommand {
             }
         }
 
-    }
-
-    // TODO: если обслуживающих методов наберется несколько,
-    //  вынести в отдельный сервис
-    private String invokeFullNameFromUpdate(Update update) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(update.getMessage().getFrom().getFirstName());
-        String lastName = update.getMessage().getFrom().getLastName();
-        if (lastName != null) {
-            stringBuilder.append(" ");
-            stringBuilder.append(lastName);
-        }
-        return stringBuilder.toString();
     }
 
     public StartBotCommand(AdminService adminService, CustomUpdateListener customUpdateListener) {

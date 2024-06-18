@@ -43,7 +43,6 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
 
     @Override
     public void checkUpdate(Update update, TelegramLongPollingEngine engine) {
-        //TODO: не уверен, что тут не будет npe
         if ((update.hasMessage()) && (update.getMessage().hasText())) {
             int totalMessageScore = 0;
             boolean itIsTest = false;
@@ -55,10 +54,6 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             String[] wordsOfMessage = textService.invokeWordsFromRawMessage(
                     incomeMessage,
                     TextFiltrationProps.NO_SHORTS);
-
-            //я хочу на будущее и предлоги/частицы себе сохранить, но в данном месте это ломает логику.
-            //поэтому для выведения кэфа я профильтрую без них, а сохраню в базу с ними
-            //TODO: исправить этот кринж (когда-нибудь)
 
             List<Callable<Integer>> tasks = createSearchingTasks(
                     wordsOfMessage,
@@ -76,7 +71,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
 
             double coefOfAllMessage = (double) totalMessageScore / (double) wordsOfMessage.length;
             log.warn("Result of search: found {} of {} words, final coef of all message {}",totalMessageScore, wordsOfMessage.length, coefOfAllMessage);
-            //TODO: зарефакторить это уродство с int и bool
+
             String testPostfix = itIsTest ? "Это был тестовый запрос." : "";
             if ((isSpam(coefOfAllMessage, wordsOfMessage.length) == 1)
                     ||(isSpam(coefOfAllMessage, wordsOfMessage.length) == 0)) {
