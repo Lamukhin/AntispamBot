@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
+
 /*
     Root service of the application. "processGroupChatUpdate()" method processes
     an every income message from a group chat. Private messages are processed by

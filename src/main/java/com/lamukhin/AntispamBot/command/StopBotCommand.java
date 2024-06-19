@@ -34,26 +34,28 @@ public class StopBotCommand {
                         @ParamName("chatId") Long chatId,
                         @ParamName("userId") Long userId) {
 
-        if ((adminService.hasAdminStatusByUserId(userId))||(userId.equals(botOwnerId))) {
-            if (!(customUpdateListener.getSwitcher().isPaused())) {
+        if(chatId.equals(userId)) {
+            if ((adminService.hasAdminStatusByUserId(userId)) || (userId.equals(botOwnerId))) {
+                if (!(customUpdateListener.getSwitcher().isPaused())) {
 
-                String switcherName = CommandOperations.invokeFullNameFromUser(update.getMessage().getFrom());
-                customUpdateListener.getSwitcher().setPaused(true);
-                customUpdateListener.getSwitcher().setLastSwitcherName(switcherName);
-                customUpdateListener.getSwitcher().setLastSwitchTimestamp(System.currentTimeMillis()+ 3 * 60 * 60 * 1000);
-                MessageOperations.sendNewMessage(
-                        chatId,
-                        "Бот приостановлен.",
-                        null,
-                        engine
-                );
-            } else {
-                MessageOperations.sendNewMessage(
-                        chatId,
-                        "Бот уже на паузе. Подробнее /ping_bot",
-                        null,
-                        engine
-                );
+                    String switcherName = CommandOperations.invokeFullNameFromUser(update.getMessage().getFrom());
+                    customUpdateListener.getSwitcher().setPaused(true);
+                    customUpdateListener.getSwitcher().setLastSwitcherName(switcherName);
+                    customUpdateListener.getSwitcher().setLastSwitchTimestamp(System.currentTimeMillis() + 3 * 60 * 60 * 1000);
+                    MessageOperations.sendNewMessage(
+                            chatId,
+                            "Бот приостановлен.",
+                            null,
+                            engine
+                    );
+                } else {
+                    MessageOperations.sendNewMessage(
+                            chatId,
+                            "Бот уже на паузе. Подробнее /ping_bot",
+                            null,
+                            engine
+                    );
+                }
             }
         }
     }
