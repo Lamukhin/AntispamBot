@@ -7,7 +7,7 @@ COPY gradle/ gradle/
 RUN chmod +x gradle --version
 
 COPY . .
-RUN chmod +x gradle && gradle clean build -x test
+RUN chmod +x gradle && gradle build -x test
 
 FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /workspace/app
