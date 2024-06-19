@@ -1,5 +1,6 @@
 package com.lamukhin.AntispamBot.service.impl;
 
+import com.lamukhin.AntispamBot.service.interfaces.AdminService;
 import com.lamukhin.AntispamBot.service.interfaces.MessageCountService;
 import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
 import com.lamukhin.AntispamBot.service.interfaces.UpdateProcessingService;
@@ -21,6 +22,7 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
     private final Logger log = LoggerFactory.getLogger(UpdateProcessingServiceDefault.class);
     private final MessageCountService messageCountService;
     private final SpamCheckingService spamCheckingService;
+    private final AdminService adminService;
     @Value("${bot_owner_tg_id}")
     private long botOwnerId;
 
@@ -32,15 +34,18 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
                 long userTelegramId = update.getMessage().getFrom().getId();
                 Long amount = messageCountService.amountOfMessages(userTelegramId);
 
-                if (userTelegramId == botOwnerId) {
+                //owner's and admin's requests are always processed
+                if ((userTelegramId == botOwnerId) || (adminService.hasAdminStatusByUserId(userTelegramId))) {
                     spamCheckingService.checkUpdate(update, engine);
-                } else
-                if ((amount != null) && (amount >= 5)) {
+                } else //if a user is trusted, update is skipped
+                    if ((amount != null) && (amount >= 5)) {
                     return;
-                } else if (amount == null) {
+                } else //if a user is new in TG, and we don't "meet" him again
+                    if ((amount == null) && (newTelegramUser(userTelegramId))) {
                     messageCountService.saveNewMember(userTelegramId);
                     spamCheckingService.checkUpdate(update, engine);
-                } else {
+                } else //if a user is new in TG, but we don't trust him yet.
+                    if (newTelegramUser(userTelegramId)) {
                     messageCountService.updateAmount(userTelegramId);
                     spamCheckingService.checkUpdate(update, engine);
                 }
@@ -49,9 +54,18 @@ public class UpdateProcessingServiceDefault implements UpdateProcessingService {
 
     }
 
+    private boolean newTelegramUser(long userTelegramId) {
+        /*
+            Usually spammers are new TG accounts.
+         */
+        long MinId19062024 = 6800000000L;
+        return userTelegramId > MinId19062024;
+    }
+
     public UpdateProcessingServiceDefault(MessageCountService messageCountService,
-                                          SpamCheckingService spamCheckingService) {
+                                          SpamCheckingService spamCheckingService, AdminService adminService) {
         this.messageCountService = messageCountService;
         this.spamCheckingService = spamCheckingService;
+        this.adminService = adminService;
     }
 }
