@@ -6,6 +6,7 @@ import com.lamukhin.AntispamBot.db.entity.DictionaryEntity;
 import com.lamukhin.AntispamBot.service.interfaces.MetadataService;
 import com.lamukhin.AntispamBot.service.interfaces.SpamCheckingService;
 import com.lamukhin.AntispamBot.service.interfaces.TextService;
+import com.lamukhin.AntispamBot.util.Commands;
 import com.lamukhin.AntispamBot.util.MessageOperations;
 import com.lamukhin.AntispamBot.util.TextFiltrationProps;
 import org.slf4j.Logger;
@@ -13,11 +14,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.BanChatMember;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 
 import javax.annotation.PreDestroy;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -47,7 +48,12 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             int totalMessageScore = 0;
             boolean itIsTest = false;
             String incomeMessage = update.getMessage().getText();
-            if (incomeMessage.startsWith("!тест")){
+            if (thisIsCommand(incomeMessage)) {
+                log.warn("This message is command. Spam checking stopped.");
+                return;
+            }
+            log.warn("This message is NOT command. Spam checking continues.");
+            if (incomeMessage.startsWith("!тест")) {
                 itIsTest = true;
                 incomeMessage = incomeMessage.replaceFirst("!тест", "");
             }
@@ -70,11 +76,11 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             }
 
             double coefOfAllMessage = (double) totalMessageScore / (double) wordsOfMessage.length;
-            log.warn("Result of search: found {} of {} words, final coef of all message {}",totalMessageScore, wordsOfMessage.length, coefOfAllMessage);
+            log.warn("Result of search: found {} of {} words, final coef of all message {}", totalMessageScore, wordsOfMessage.length, coefOfAllMessage);
 
             String testPostfix = itIsTest ? "Это был тестовый запрос." : "";
             if ((isSpam(coefOfAllMessage, wordsOfMessage.length) == 1)
-                    ||(isSpam(coefOfAllMessage, wordsOfMessage.length) == 0)) {
+                    || (isSpam(coefOfAllMessage, wordsOfMessage.length) == 0)) {
 
                 String spamFoundResponse = String.format(
                         SPAM_FOUND,
@@ -88,7 +94,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                         update.getMessage().getMessageId(),
                         engine);
 
-                if(!itIsTest) {
+                if (!itIsTest) {
                     var send = BanChatMember.builder()
                             .chatId(update.getMessage().getChatId())
                             .userId(update.getMessage().getFrom().getId())
@@ -112,6 +118,18 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                         engine);
             }
         }
+    }
+
+    private boolean thisIsCommand(String incomeMessage) {
+        List<BotCommand> allCommands = new ArrayList<>() {
+            {
+                addAll(Commands.getDefaultUserCommands());
+                addAll(Commands.getAdminCommands());
+                addAll(Commands.getOwnerCommands());
+            }
+        };
+        return allCommands.stream()
+                .anyMatch(current -> incomeMessage.contains(current.getCommand()));
     }
 
     private List<Callable<Integer>> createSearchingTasks(String[] wordsOfMessage, Map<String, DictionaryEntity> cachedDictionary, SearchSettings searchSettings) {
