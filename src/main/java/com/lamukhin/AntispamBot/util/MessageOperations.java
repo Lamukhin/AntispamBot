@@ -15,15 +15,17 @@ public class MessageOperations {
 
     private static final Logger log = LoggerFactory.getLogger(MessageOperations.class);
 
-    //TODO: по необходимости внедрить везде parseMode и убрать builder
+    //TODO: по необходимости внедрить везде новую версию билдинга
     public static void sendNewMessage(Long chatId, String text, String parseMode, InlineKeyboardMarkup markup, TelegramLongPollingEngine engine) {
-        SendMessage send = new SendMessage();
-        send.setChatId(chatId);
-        send.setText(text);
-        send.setReplyMarkup(markup);
+        var builder = SendMessage.builder()
+                .chatId(chatId)
+                .text(text)
+                .replyMarkup(markup);
         if (parseMode != null) {
-            send.setParseMode(parseMode);
+            builder.parseMode(parseMode);
         }
+        var send = builder.build();
+
         try {
             engine.execute(send);
         } catch (TelegramApiException e) {
