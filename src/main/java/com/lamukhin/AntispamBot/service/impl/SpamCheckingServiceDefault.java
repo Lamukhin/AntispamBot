@@ -46,7 +46,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
     public void checkUpdate(Update update, TelegramLongPollingEngine engine) {
         if ((update.hasMessage()) && (update.getMessage().hasText())) {
             int totalMessageScore = 0;
-            boolean itIsTest = false;
+            boolean thisIsTest = false;
             String incomeMessage = update.getMessage().getText();
             if (thisIsCommand(incomeMessage)) {
                 log.warn("This message is command. Spam checking stopped.");
@@ -54,7 +54,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             }
             log.warn("This message is NOT command. Spam checking continues.");
             if (incomeMessage.startsWith("!тест")) {
-                itIsTest = true;
+                thisIsTest = true;
                 incomeMessage = incomeMessage.replaceFirst("!тест", "");
             }
             String[] wordsOfMessage = textService.invokeWordsFromRawMessage(
@@ -78,7 +78,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
             double coefOfAllMessage = (double) totalMessageScore / (double) wordsOfMessage.length;
             log.warn("Result of search: found {} of {} words, final coef of all message {}", totalMessageScore, wordsOfMessage.length, coefOfAllMessage);
 
-            String testPostfix = itIsTest ? "Это был тестовый запрос." : "";
+            String testPostfix = thisIsTest ? "Это был тестовый запрос." : "";
             if ((isSpam(coefOfAllMessage, wordsOfMessage.length) == 1)
                     || (isSpam(coefOfAllMessage, wordsOfMessage.length) == 0)) {
 
@@ -94,7 +94,7 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                         update.getMessage().getMessageId(),
                         engine);
 
-                if (!itIsTest) {
+                if (!thisIsTest) {
                     var send = BanChatMember.builder()
                             .chatId(update.getMessage().getChatId())
                             .userId(update.getMessage().getFrom().getId())
