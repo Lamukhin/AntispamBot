@@ -8,13 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.User;
-import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
-import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
-import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
-import ru.wdeath.managerbot.lib.bot.annotations.CommandOther;
-import ru.wdeath.managerbot.lib.bot.annotations.ParamName;
-import ru.wdeath.managerbot.lib.bot.command.CommandContext;
-import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
+import ru.wdeath.telegram.bot.starter.TelegramLongPollingEngine;
+import ru.wdeath.telegram.bot.starter.annotations.CommandFirst;
+import ru.wdeath.telegram.bot.starter.annotations.CommandNames;
+import ru.wdeath.telegram.bot.starter.annotations.CommandOther;
+import ru.wdeath.telegram.bot.starter.annotations.ParamName;
+import ru.wdeath.telegram.bot.starter.command.CommandContext;
+import ru.wdeath.telegram.bot.starter.command.TypeCommand;
 
 import static com.lamukhin.AntispamBot.util.ResponseMessage.*;
 

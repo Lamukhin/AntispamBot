@@ -9,11 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.BanChatMember;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
-import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
-import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
-import ru.wdeath.managerbot.lib.bot.annotations.ParamName;
-import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
+import ru.wdeath.telegram.bot.starter.TelegramLongPollingEngine;
+import ru.wdeath.telegram.bot.starter.annotations.CommandFirst;
+import ru.wdeath.telegram.bot.starter.annotations.CommandNames;
+import ru.wdeath.telegram.bot.starter.annotations.ParamName;
+import ru.wdeath.telegram.bot.starter.command.TypeCommand;
 
 @Component
 @CommandNames(value = BanCommand.NAME, type = TypeCommand.MESSAGE)

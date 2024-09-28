@@ -1,6 +1,7 @@
 package com.lamukhin.AntispamBot.db.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.util.Objects;
 import java.util.UUID;
 

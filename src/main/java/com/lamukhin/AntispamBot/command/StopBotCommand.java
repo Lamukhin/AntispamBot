@@ -7,15 +7,11 @@ import com.lamukhin.AntispamBot.util.MessageOperations;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
-import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
-import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
-import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
-import ru.wdeath.managerbot.lib.bot.annotations.ParamName;
-import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
-
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import ru.wdeath.telegram.bot.starter.TelegramLongPollingEngine;
+import ru.wdeath.telegram.bot.starter.annotations.CommandFirst;
+import ru.wdeath.telegram.bot.starter.annotations.CommandNames;
+import ru.wdeath.telegram.bot.starter.annotations.ParamName;
+import ru.wdeath.telegram.bot.starter.command.TypeCommand;
 
 
 @Component

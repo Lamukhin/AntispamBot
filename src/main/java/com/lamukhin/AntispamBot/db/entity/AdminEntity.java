@@ -1,8 +1,8 @@
 package com.lamukhin.AntispamBot.db.entity;
 
+import jakarta.persistence.*;
 import org.jetbrains.annotations.NotNull;
 
-import javax.persistence.*;
 import java.util.Objects;
 import java.util.UUID;
 

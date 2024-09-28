@@ -15,9 +15,10 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.BanChatMember;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
-import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
+import ru.wdeath.telegram.bot.starter.TelegramLongPollingEngine;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

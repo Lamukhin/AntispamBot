@@ -19,9 +19,19 @@ public class SecurityConfig {
         this.template = new SecurityTemplate(errorEndpoint, tokenFilter);
     }
 
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+//        httpSecurity.authorizeRequests().regexMatchers("/webhook").permitAll().and();
+//        return template.filterChain(httpSecurity, null);
+//    }
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeRequests().regexMatchers("/webhook").permitAll().and();
-        return template.filterChain(httpSecurity, null);
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/webhook")
+                        .permitAll()
+                    )
+                    .csrf(csrf -> csrf.ignoringRequestMatchers("/webhook"));
+        return http.build();
     }
 }

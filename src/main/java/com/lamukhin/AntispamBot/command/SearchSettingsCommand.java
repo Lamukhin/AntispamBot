@@ -2,20 +2,20 @@ package com.lamukhin.AntispamBot.command;
 
 import com.lamukhin.AntispamBot.algorithm.SearchSettings;
 import com.lamukhin.AntispamBot.util.MessageOperations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
-import ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine;
-import ru.wdeath.managerbot.lib.bot.annotations.CommandFirst;
-import ru.wdeath.managerbot.lib.bot.annotations.CommandNames;
-import ru.wdeath.managerbot.lib.bot.annotations.ParamName;
-import ru.wdeath.managerbot.lib.bot.callback.CallbackData;
-import ru.wdeath.managerbot.lib.bot.callback.CallbackDataSender;
-import ru.wdeath.managerbot.lib.bot.command.TypeCommand;
-import ru.wdeath.managerbot.lib.util.KeyboardUtil;
+import ru.wdeath.telegram.bot.starter.TelegramLongPollingEngine;
+import ru.wdeath.telegram.bot.starter.annotations.CommandFirst;
+import ru.wdeath.telegram.bot.starter.annotations.CommandNames;
+import ru.wdeath.telegram.bot.starter.annotations.ParamName;
+import ru.wdeath.telegram.bot.starter.callback.CallbackData;
+import ru.wdeath.telegram.bot.starter.callback.CallbackDataSender;
+import ru.wdeath.telegram.bot.starter.command.TypeCommand;
+import ru.wdeath.telegram.bot.starter.util.KeyboardUtil;
+
 import java.text.DecimalFormat;
+
 import static com.lamukhin.AntispamBot.util.ResponseMessage.CURRENT_SETTINGS;
 
 @Component

@@ -3,7 +3,7 @@ spring:
     name: antispam-bot
 
   datasource:
-    url: jdbc:postgresql://147.45.237.196:5432/antispambot
+    url: jdbc:postgresql://localhost:5432/antispambot
     username: postgres
     password: SomePassword1997
     driver-class-name: org.postgresql.Driver
@@ -29,9 +29,9 @@ program-agent:
   charts:
     bot-message: true
   client:
-    token: "${program_agent_client_token}"
+    token: ""
     time-delay-send: 15000
     host: "https://wds-program-agent.ru/api/"
-    myHost: "${program_agent_client_my_host}"
+    myHost: ""
 
 bot_owner_tg_id: 260113861
