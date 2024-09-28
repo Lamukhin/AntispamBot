@@ -5,7 +5,7 @@
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
     <!-- remove flood from logs -->
-    <logger name="ru.wdeath.managerbot.lib.bot.TelegramLongPollingEngine" level="ERROR"/>
+    <logger name="ru.wdeath.telegram.bot.starter.TelegramLongPollingEngine" level="ERROR"/>
     <logger name="ru.wdeath.programagent.lib.service.impl.BackClientServiceImpl" level="OFF"/>
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
