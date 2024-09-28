@@ -104,6 +104,11 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
                             .build();
                     engine.executeNotException(send);
 
+                    MessageOperations.deleteMessage(
+                            update.getMessage().getChatId(),
+                            update.getMessage().getMessageId(),
+                            engine);
+
                     metadataService.updateDeletedMessages(engine.getBotUsername());
                     metadataService.updateBannedUsers(engine.getBotUsername());
                     textService.saveMessageIntoDictionary(wordsOfMessage);
@@ -167,7 +172,4 @@ public class SpamCheckingServiceDefault implements SpamCheckingService {
     }
 }
 
-//                MessageOperations.deleteMessage(
-//                        update.getMessage().getChatId(),
-//                        update.getMessage().getMessageId(),
-//                        engine);
+

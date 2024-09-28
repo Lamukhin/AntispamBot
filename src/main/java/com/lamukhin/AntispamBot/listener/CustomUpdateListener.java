@@ -17,7 +17,7 @@ public class CustomUpdateListener implements HandlerBotUpdate {
 
     private final UpdateProcessingService updateProcessingService;
 
-    private Switcher switcher = new Switcher(false);
+    private final Switcher switcher = new Switcher(false);
     private final Logger log = LoggerFactory.getLogger(CustomUpdateListener.class);
 
     @Override

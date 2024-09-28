@@ -1,4 +1,4 @@
-  version: '3.0'
+  version: '3.8'
 
   services:
 
@@ -21,7 +21,7 @@
 
     db:
       restart: always
-      image: postgres:12
+      image: postgres:16.4-alpine
       environment:
         POSTGRES_USER: ${datasource_username}
         POSTGRES_PASSWORD: ${datasource_password}
