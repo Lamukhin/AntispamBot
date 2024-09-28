@@ -4,7 +4,7 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/antispambot
-    username: postgres
+    username: postgres1
     password: SomePassword1997
     driver-class-name: org.postgresql.Driver
 
