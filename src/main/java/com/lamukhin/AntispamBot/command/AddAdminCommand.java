@@ -70,7 +70,7 @@ public class AddAdminCommand {
                     null,
                     engine
             );
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
             MessageOperations.sendNewMessage(
                     chatId,
                     ERROR_ADDING_ADMIN,

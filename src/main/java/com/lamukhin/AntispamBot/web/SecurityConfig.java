@@ -2,6 +2,7 @@ package com.lamukhin.AntispamBot.web;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -19,19 +20,14 @@ public class SecurityConfig {
         this.template = new SecurityTemplate(errorEndpoint, tokenFilter);
     }
 
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-//        httpSecurity.authorizeRequests().regexMatchers("/webhook").permitAll().and();
-//        return template.filterChain(httpSecurity, null);
-//    }
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        return template.filterChain(httpSecurity, null);
+    }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/webhook")
-                        .permitAll()
-                    )
-                    .csrf(csrf -> csrf.ignoringRequestMatchers("/webhook"));
-        return http.build();
+    public AuthenticationManager authenticationManager() throws Exception {
+        return authentication -> null;
     }
 }
+

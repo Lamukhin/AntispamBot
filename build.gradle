@@ -24,7 +24,7 @@ repositories {
 
 dependencies {
 
-	implementation(fileTree(dir: 'libs', include: ['*.jar']))
+	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'org.springframework.boot:spring-boot-starter-jooq'
@@ -41,7 +41,8 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.17.2'
 	implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-jakarta-xmlbind-annotations', version: '2.17.2'
-	implementation group: 'org.telegram', name: 'telegrambots', version: '6.9.7.1'
+	implementation 'org.telegram:telegrambots-longpolling:7.4.0'
+	implementation 'org.telegram:telegrambots-client:7.4.0'
 	implementation group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '4.0.4'
 	implementation group: 'org.glassfish.jaxb', name: 'jaxb-core', version: '4.0.4'
 	implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'

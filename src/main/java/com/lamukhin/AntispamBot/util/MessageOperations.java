@@ -2,7 +2,6 @@ package com.lamukhin.AntispamBot.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -10,13 +9,15 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.wdeath.telegram.bot.starter.TelegramLongPollingEngine;
 
 public class MessageOperations {
 
     private static final Logger log = LoggerFactory.getLogger(MessageOperations.class);
 
     //TODO: по необходимости внедрить везде новую версию билдинга
-    public static void sendNewMessage(Long chatId, String text, String parseMode, InlineKeyboardMarkup markup, TelegramLongPollingBot engine) {
+    public static void sendNewMessage(Long chatId, String text, String parseMode, InlineKeyboardMarkup markup,
+                                      TelegramLongPollingEngine engine) {
         var builder = SendMessage.builder()
                 .chatId(chatId)
                 .text(text)
@@ -33,13 +34,14 @@ public class MessageOperations {
         }
     }
 
-    public static void sendNewMessage(Long chatId, String text, String parseMode, TelegramLongPollingBot engine) {
-        SendMessage send = new SendMessage();
-        send.setChatId(chatId);
-        send.setText(text);
+    public static void sendNewMessage(Long chatId, String text, String parseMode, TelegramLongPollingEngine engine) {
+        var builder = SendMessage.builder()
+                .chatId(chatId)
+                .text(text);
         if (parseMode != null) {
-            send.setParseMode(parseMode);
+            builder.parseMode(parseMode);
         }
+        var send = builder.build();
         try {
             engine.execute(send);
         } catch (TelegramApiException e) {
@@ -47,7 +49,7 @@ public class MessageOperations {
         }
     }
 
-    public static void replyToMessage(Long chatId, String text, int messageId, TelegramLongPollingBot engine) {
+    public static void replyToMessage(Long chatId, String text, int messageId, TelegramLongPollingEngine engine) {
         var send = SendMessage
                 .builder()
                 .chatId(chatId)
@@ -62,7 +64,7 @@ public class MessageOperations {
         }
     }
 
-    public static void replyToMessage(Long chatId, String text, InlineKeyboardMarkup markup, int messageId, TelegramLongPollingBot engine) {
+    public static void replyToMessage(Long chatId, String text, InlineKeyboardMarkup markup, int messageId, TelegramLongPollingEngine engine) {
         var send = SendMessage
                 .builder()
                 .chatId(chatId)
@@ -78,7 +80,7 @@ public class MessageOperations {
         }
     }
 
-    public static void editCurrentMessage(Long chatId, String text, InlineKeyboardMarkup markup, TelegramLongPollingBot engine, Update update) {
+    public static void editCurrentMessage(Long chatId, String text, InlineKeyboardMarkup markup, TelegramLongPollingEngine engine, Update update) {
         var send = EditMessageText
                 .builder()
                 .chatId(chatId)
@@ -94,7 +96,7 @@ public class MessageOperations {
         }
     }
 
-    public static void editCurrentMessage(Long chatId, String text, TelegramLongPollingBot engine, Update update) {
+    public static void editCurrentMessage(Long chatId, String text, TelegramLongPollingEngine engine, Update update) {
         var send = EditMessageText
                 .builder()
                 .chatId(chatId)
@@ -109,7 +111,7 @@ public class MessageOperations {
         }
     }
 
-    public static void deleteMessage(Long chatId, int messageId, TelegramLongPollingBot engine) {
+    public static void deleteMessage(Long chatId, int messageId, TelegramLongPollingEngine engine) {
         var send = DeleteMessage
                 .builder()
                 .chatId(chatId)
